@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Оперативная информация</string>
+    <string name="open">Открыть</string>
+    <string name="close">Закрыть</string>
+    <string name="settings">Натройки</string>
+    <string name="contacts">Контакты</string>
+    <string name="exit">Выход</string>
+    <string name="about">О программе</string>
+
+    <string name="tagWaterlink">Информация с сайта\nМуниципальное унитарное предприятие\n&quot;Управление Водоканал&quot;\nг. Таганрог</string>
+</resources>

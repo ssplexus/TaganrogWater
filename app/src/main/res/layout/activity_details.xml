@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailsActivity"
+    android:orientation="vertical"
+    android:weightSum="2">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.95"
+        android:background="@color/bright_water"
+        android:scaleType="fitEnd"
+        android:src="@drawable/tagan_image" />
+
+    <TextView
+        android:id="@+id/notifDate"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/water"
+        android:text="Date"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/notifBody"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="5dp"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        tools:text="@tools:sample/lorem/random"
+        />
+
+</LinearLayout>

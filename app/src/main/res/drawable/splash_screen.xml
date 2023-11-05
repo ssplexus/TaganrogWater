@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/water"/>
+    <item android:drawable="@drawable/tgnwater_icon_splashscreen"
+        android:gravity="center" android:height="300dp" android:width="300dp"/>
+</layer-list>
