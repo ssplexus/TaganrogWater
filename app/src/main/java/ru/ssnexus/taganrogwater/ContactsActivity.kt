@@ -15,6 +15,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ru.ssnexus.taganrogwater.databinding.ActivityContactsBinding
+import ru.ssnexus.taganrogwater.utils.Utils
 import timber.log.Timber
 
 class ContactsActivity : AppCompatActivity() {

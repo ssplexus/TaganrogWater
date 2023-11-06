@@ -1,8 +1,6 @@
 package ru.ssnexus.taganrogwater
 
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -21,6 +19,8 @@ import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
+import ru.ssnexus.taganrogwater.utils.AutoDisposable
+import ru.ssnexus.taganrogwater.utils.Utils
 import ru.ssnexus.taganrogwater.viewmodel.MainViewModel
 import timber.log.Timber
 import java.net.URL
@@ -32,11 +32,11 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider.NewInstanceFactory().create(MainViewModel::class.java)
     }
 
+    val autoDisposable = AutoDisposable()
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var notificationAdapter: NotificationAdapter
-
-    private var notificationsList: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,41 +46,24 @@ class MainActivity : AppCompatActivity() {
             Timber.plant(Timber.DebugTree())
         }
 
+        autoDisposable.bindTo(this.lifecycle)
         initLayout()
-        binding.navView.setNavigationItemSelectedListener {
-            when(it.itemId)
-            {
-                R.id.settings -> {
-                    onBackPressed()
-                    startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-                }
-                R.id.contacts -> {
-                    onBackPressed()
-                    startActivity(Intent(this@MainActivity, ContactsActivity::class.java))
-                }
-                R.id.about -> Toast.makeText(baseContext, "About", Toast.LENGTH_SHORT).show()
-                R.id.exit -> {
-                    closeApp()
-                }
-            }
-            true
-        }
     }
 
     private fun closeApp(){
         val builder = MaterialAlertDialogBuilder(this)
-        builder.setTitle("Exit")
-            .setMessage("Do you want to close app?")
-            .setPositiveButton("Yes"){_, _ ->
+        builder.setTitle(getString(R.string.exit))
+            .setMessage(getString(R.string.do_you_want_to_exit))
+            .setPositiveButton(getString(R.string.yes)){_, _ ->
                 exitProcess(1)
             }
-            .setNegativeButton("No"){dialog, _ ->
+            .setNegativeButton(getString(R.string.no)){dialog, _ ->
                 dialog.dismiss()
             }
         val customDialog = builder.create()
         customDialog.show()
-        customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED)
-        customDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.RED)
+        customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
+        customDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(R.color.dark_water))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -111,29 +94,38 @@ class MainActivity : AppCompatActivity() {
         binding.operInfoRV.layoutManager = LinearLayoutManager(this@MainActivity)
         notificationAdapter = NotificationAdapter(this@MainActivity, ArrayList())
         binding.operInfoRV.adapter = notificationAdapter
-        if(Utils.checkConnection(this)) getData() else Toast.makeText(this, "No connection", Toast.LENGTH_SHORT).show()
-        notificationsList.observe(this) {
-            Timber.d("Data!!!")
-            if(!it.isEmpty()) notificationAdapter.updateNotificationsList(it)
-        }
-    }
 
-    private fun getData(){
-        // Create a new coroutine scope
-        val scope = CoroutineScope(Dispatchers.Default)
-        // Launch a new coroutine in the scope
-        scope.launch {
-            val url = URL(AppConstants.DATA_URL)
-            val doc: Document = Jsoup.connect(url.toString()).get()
-            var element = doc.select("table").get(1)
-            val rows = element.select("tr")
-            var notifications = ArrayList<String>()
-            rows.forEach{row ->
-                notifications.add(row.text())
+        if(Utils.checkConnection(this))
+//            App.instance.interactor.getData()
+        else
+            Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_SHORT).show()
+
+        App.instance.interactor.getNotificationLiveData().observe(this){
+            if(!it.isEmpty()) {
+                Timber.d("notificationAdapter.updateNotificationsList(it)")
+                notificationAdapter.updateNotificationsList(it)
             }
-            notifications.removeLast()
-            notificationsList.postValue(notifications)
         }
+
+        binding.navView.setNavigationItemSelectedListener {
+            when(it.itemId)
+            {
+                R.id.settings -> {
+                    onBackPressed()
+                    startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                }
+                R.id.contacts -> {
+                    onBackPressed()
+                    startActivity(Intent(this@MainActivity, ContactsActivity::class.java))
+                }
+                R.id.about -> Toast.makeText(baseContext, "About", Toast.LENGTH_SHORT).show()
+                R.id.exit -> {
+                    closeApp()
+                }
+            }
+            true
+        }
+        App.instance.interactor.initDataObservable(this)
     }
 
     override fun onBackPressed() {

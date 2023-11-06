@@ -1,4 +1,4 @@
-package ru.ssnexus.taganrogwater
+package ru.ssnexus.taganrogwater.utils
 
 import android.app.Activity
 import android.content.Context

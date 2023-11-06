@@ -9,6 +9,7 @@ import ru.ssnexus.taganrogwater.data.MainRepository
 import ru.ssnexus.taganrogwater.data.db.AppDatabase
 import ru.ssnexus.taganrogwater.domain.Interactor
 import ru.ssnexus.taganrogwater.preferences.PreferencesProvider
+import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import timber.log.Timber
 
 class App: Application() {
@@ -32,11 +33,12 @@ class App: Application() {
             this,
             AppDatabase::class.java,
             AppConstants.DB_NAME
-        ).build().notificationDao())
+        ).fallbackToDestructiveMigration().build().notificationDao())
 
         prefsProvider = PreferencesProvider(this)
 
         interactor = Interactor(repository, prefsProvider)
+
     }
 
     // Вызывается при изменении конфигурации, например, поворот
