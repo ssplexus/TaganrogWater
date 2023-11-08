@@ -6,7 +6,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ru.ssnexus.taganrogwater.DetailsActivity
+import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.WaterInfoViewBinding
 

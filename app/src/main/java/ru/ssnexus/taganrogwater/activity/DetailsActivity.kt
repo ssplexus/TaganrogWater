@@ -1,8 +1,9 @@
-package ru.ssnexus.taganrogwater
+package ru.ssnexus.taganrogwater.activity
 
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityDetailsBinding
 import timber.log.Timber
 

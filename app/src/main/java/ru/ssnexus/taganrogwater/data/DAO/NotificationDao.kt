@@ -13,6 +13,9 @@ interface NotificationDao {
     @Query("SELECT * FROM cached_data")
     fun getCachedDataObservable(): Observable<List<NotificationsData>>
 
+    @Query("SELECT * FROM cached_data")
+    fun getCachedData(): List<NotificationsData>
+
     //Кладём списком в БД, в случае конфликта перезаписываем
     @Insert(entity = NotificationsData::class, onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(list: List<NotificationsData>)

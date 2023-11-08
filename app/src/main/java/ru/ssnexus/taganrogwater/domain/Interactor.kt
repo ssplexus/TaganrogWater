@@ -11,7 +11,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
-import ru.ssnexus.taganrogwater.MainActivity
+import ru.ssnexus.taganrogwater.activity.MainActivity
 import ru.ssnexus.taganrogwater.data.MainRepository
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.preferences.PreferencesProvider
@@ -54,9 +54,8 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
                 notifications.add(row.text())
             }
             notifications.removeLast()
-            repo.putToDb(notifications)
-            Timber.d(" repo.getRowCount() = " + repo.getRowCount())
-
+            repo.clearData()
+            if (!notifications.isEmpty()) repo.putToDb(notifications)
         }
     }
 }

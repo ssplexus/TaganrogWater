@@ -1,4 +1,4 @@
-package ru.ssnexus.taganrogwater
+package ru.ssnexus.taganrogwater.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,16 +8,16 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.BuildConfig
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import ru.ssnexus.taganrogwater.App
+import ru.ssnexus.taganrogwater.NotificationAdapter
+import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
 import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import ru.ssnexus.taganrogwater.utils.Utils
@@ -54,10 +54,10 @@ class MainActivity : AppCompatActivity() {
         val builder = MaterialAlertDialogBuilder(this)
         builder.setTitle(getString(R.string.exit))
             .setMessage(getString(R.string.do_you_want_to_exit))
-            .setPositiveButton(getString(R.string.yes)){_, _ ->
+            .setPositiveButton(getString(R.string.yes)){ _, _ ->
                 exitProcess(1)
             }
-            .setNegativeButton(getString(R.string.no)){dialog, _ ->
+            .setNegativeButton(getString(R.string.no)){ dialog, _ ->
                 dialog.dismiss()
             }
         val customDialog = builder.create()
@@ -71,10 +71,10 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.archive){
-            return true
-        }
+//        val id = item.itemId
+//        if (id == R.id.archive){
+//            return true
+//        }
         if(toggle.onOptionsItemSelected(item))
             return true
         return super.onOptionsItemSelected(item)
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         binding.operInfoRV.adapter = notificationAdapter
 
         if(Utils.checkConnection(this))
-//            App.instance.interactor.getData()
+            App.instance.interactor.getData()
         else
             Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_SHORT).show()
 

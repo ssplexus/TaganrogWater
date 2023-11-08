@@ -1,7 +1,8 @@
-package ru.ssnexus.taganrogwater
+package ru.ssnexus.taganrogwater.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {

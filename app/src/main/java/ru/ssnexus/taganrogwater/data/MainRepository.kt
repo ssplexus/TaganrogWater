@@ -1,23 +1,55 @@
 package ru.ssnexus.taganrogwater.data
 
+import android.annotation.SuppressLint
 import io.reactivex.rxjava3.core.Observable
+import okhttp3.internal.notify
 import ru.ssnexus.taganrogwater.data.DAO.NotificationDao
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import timber.log.Timber
+import java.text.ParseException
+import java.text.SimpleDateFormat
 
 class MainRepository(private val notificationDao: NotificationDao) {
     fun getNotificationsDataObservable() : Observable<List<NotificationsData>> = notificationDao.getCachedDataObservable()
 
+    @SuppressLint("SimpleDateFormat")
     fun putToDb(list: ArrayList<String>) {
         val notificationsData = ArrayList<NotificationsData>()
+        val notificationsCached = notificationDao.getCachedData() as ArrayList<NotificationsData>
+
         list.forEach {
                 val srcText = it.trim()
                 var words = srcText.split(" ") as ArrayList<String>
-                if(!words.isEmpty() && words.size > 1)
-                    notificationsData.add(NotificationsData(date = words.removeFirst(), notifiction = words.joinToString(" ")))
+                if(!words.isEmpty() && words.size > 1){
+                    var ignore: Boolean = false
+                    var date = words.removeFirst()
+                    val formatter = SimpleDateFormat("dd.MM.yy")
+                    try {
+                        val dateFromNotif = formatter.parse(date)
+                        dateFromNotif?.let { it_date ->
+                            date = formatter.format(it_date)
+                           }
+                    } catch (e:ParseException){
+                        e.printStackTrace()
+                    }
+
+                    val dateLst = date.split(".")
+                    if(dateLst.size == 3)
+                        date = dateLst[0] + "." + dateLst[1] + ".20" + dateLst[2]
+
+                    val notification = words.joinToString(" ")
+                    notificationsCached.forEach{
+                        if(date == it.date && notification == it.notifiction) {
+                            ignore = true
+                            return@forEach
+                        }
+                    }
+                    if(!ignore)
+                        notificationsData.add(NotificationsData(date = date, notifiction = notification))
+                }
         }
         Timber.d("notificationsData.size = " + notificationsData.size)
-        notificationDao.insertAll(notificationsData)
+        if(!notificationsData.isEmpty()) notificationDao.insertAll(notificationsData)
     }
 
     fun updateTrackListenLaterStateById(id : Int) {
