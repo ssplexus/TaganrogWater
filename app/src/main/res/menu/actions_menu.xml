@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/icon"
-        android:title="icon"
-        app:showAsAction="always"
-        android:icon="@drawable/old_notifications_icon"/>
-    <item
-        android:id="@+id/archive"
-        android:title="Archive"
-        app:showAsAction="always"
-        app:actionViewClass="android.widget.CheckBox"
-        />
+<!--    <item-->
+<!--        android:id="@+id/icon"-->
+<!--        android:title="icon"-->
+<!--        app:showAsAction="always"-->
+<!--        android:icon="@drawable/old_notifications_icon"/>-->
+<!--    <item-->
+<!--        android:id="@+id/archive"-->
+<!--        android:title="Archive"-->
+<!--        app:showAsAction="always"-->
+<!--        app:actionViewClass="android.widget.CheckBox"-->
+<!--        />-->
 
 </menu>

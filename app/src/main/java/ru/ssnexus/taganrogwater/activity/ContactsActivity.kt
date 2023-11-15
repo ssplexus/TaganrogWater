@@ -1,4 +1,4 @@
-package ru.ssnexus.taganrogwater
+package ru.ssnexus.taganrogwater.activity
 
 import android.app.ProgressDialog
 import android.content.Intent
@@ -14,7 +14,10 @@ import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import ru.ssnexus.taganrogwater.AppConstants
+import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityContactsBinding
+import ru.ssnexus.taganrogwater.utils.Utils
 import timber.log.Timber
 
 class ContactsActivity : AppCompatActivity() {

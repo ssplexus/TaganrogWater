@@ -22,18 +22,18 @@
         android:theme="@style/splash_screen"
         tools:targetApi="31">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activity.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".ContactsActivity"
+            android:name=".activity.ContactsActivity"
             android:exported="false" />
         <activity
-            android:name=".DetailsActivity"
+            android:name=".activity.DetailsActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
