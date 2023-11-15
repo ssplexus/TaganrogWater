@@ -1,6 +1,8 @@
 package ru.ssnexus.taganrogwater.data
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import io.reactivex.rxjava3.core.Observable
 import okhttp3.internal.notify
 import ru.ssnexus.taganrogwater.data.DAO.NotificationDao
@@ -8,10 +10,15 @@ import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainRepository(private val notificationDao: NotificationDao) {
     fun getNotificationsDataObservable() : Observable<List<NotificationsData>> = notificationDao.getCachedDataObservable()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
     fun putToDb(list: ArrayList<String>) {
         val notificationsData = ArrayList<NotificationsData>()
@@ -22,10 +29,13 @@ class MainRepository(private val notificationDao: NotificationDao) {
                 var words = srcText.split(" ") as ArrayList<String>
                 if(!words.isEmpty() && words.size > 1){
                     var ignore: Boolean = false
+                    var marked = 0
                     var date = words.removeFirst()
                     val formatter = SimpleDateFormat("dd.MM.yy")
                     try {
                         val dateFromNotif = formatter.parse(date)
+                        if (dateFromNotif != null) if(dateFromNotif < Date()) marked = -1
+
                         dateFromNotif?.let { it_date ->
                             date = formatter.format(it_date)
                            }
@@ -45,15 +55,21 @@ class MainRepository(private val notificationDao: NotificationDao) {
                         }
                     }
                     if(!ignore)
-                        notificationsData.add(NotificationsData(date = date, notifiction = notification))
+                        notificationsData.add(NotificationsData(marked = marked, date = date, notifiction = notification))
                 }
         }
         Timber.d("notificationsData.size = " + notificationsData.size)
         if(!notificationsData.isEmpty()) notificationDao.insertAll(notificationsData)
     }
 
-    fun updateTrackListenLaterStateById(id : Int) {
+    fun updateMarkedStateById(id : Int) {
         notificationDao.updateMarkedById(id)
+    }
+
+    fun getMarkedStateById(id: Int) = notificationDao.getMarkedStateById(id)
+
+    fun removeNotificationById(id: Int){
+        notificationDao.removeNotificationById(id)
     }
 
     fun clearData(){

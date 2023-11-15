@@ -20,13 +20,21 @@ interface NotificationDao {
     @Insert(entity = NotificationsData::class, onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(list: List<NotificationsData>)
 
-    // Снять/убрать закладку
+    // Снять/убрать пометку
     @Query("UPDATE cached_data SET marked = marked * (-1) WHERE id = :id")
     fun updateMarkedById(id : Int)
+
+    // Получить состояние пометки уведомления
+    @Query("SELECT marked FROM cached_data WHERE id = :id")
+    fun getMarkedStateById(id : Int): Int
 
     // Очистка таблицы
     @Query("DELETE FROM cached_data")
     fun nukeData()
+
+    // Очистка таблицы
+    @Query("DELETE FROM cached_data WHERE id = :id")
+    fun removeNotificationById(id: Int)
 
     @Query("SELECT COUNT(*) FROM cached_data")
     fun getSize(): Int

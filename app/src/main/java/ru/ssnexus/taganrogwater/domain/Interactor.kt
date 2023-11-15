@@ -1,5 +1,7 @@
 package ru.ssnexus.taganrogwater.domain
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide.init
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -40,6 +42,17 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
 
     fun getNotificationLiveData() = notificationLiveData
 
+    fun updateMarkedStateById(id: Int){
+        repo.updateMarkedStateById(id)
+    }
+
+    fun getMarkedStateById(id: Int) = repo.getMarkedStateById(id)
+
+    fun removeNotificationById(id: Int){
+        repo.removeNotificationById(id)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getData(){
         // Create a new coroutine scope
         val scope = CoroutineScope(Dispatchers.Default)

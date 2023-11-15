@@ -3,12 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/drawable/cancel_dialog_icon.xml" value="0.192" />
         <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/drawable/ic_baseline_hot_tub_24.xml" value="0.1" />
+        <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/drawable/star_outline_icon.xml" value="0.1905" />
+        <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/drawable/star_rate_icon.xml" value="0.1905" />
         <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/layout/activity_contacts.xml" value="0.11851851851851852" />
-        <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/layout/activity_details.xml" value="0.1" />
+        <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/layout/activity_details.xml" value="0.33" />
         <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/layout/nav_header.xml" value="0.1" />
-        <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/layout/water_info_view.xml" value="0.1" />
+        <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/layout/settings_dialog_layout.xml" value="0.35833333333333334" />
+        <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/layout/water_info_view.xml" value="0.33" />
         <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/menu/actions_menu.xml" value="0.18" />
         <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/menu/nav_menu.xml" value="0.14" />
         <entry key="..\:/Android_Projects/TaganrogWater/app/src/main/res/mipmap-anydpi-v26/tgnwater_icon_splashscreen.xml" value="0.1" />
