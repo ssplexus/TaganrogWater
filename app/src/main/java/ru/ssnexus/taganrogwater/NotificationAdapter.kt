@@ -7,6 +7,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.*
@@ -51,7 +52,6 @@ class NotificationAdapter(private val context: Context, private var notification
                         else -> R.string.do_you_want_to_remove_notification
                     }))
                 .setPositiveButton(context.getString(R.string.yes)){ dialog, _ ->
-                    val state = -1
                     runBlocking {
                         val job: Job = launch(context = Dispatchers.Default) {
                             when(marked){
@@ -77,13 +77,13 @@ class NotificationAdapter(private val context: Context, private var notification
         holder.date.text = notificationsData[position].date
         holder.notification.text = notificationsData[position].notifiction
 
+//        holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
         holder.itemContainer.setOnClickListener {
             DetailsActivity.notificationDate = holder.date.text as String
             DetailsActivity.notificationBody = holder.notification.text as String
             val activity = holder.itemView.context as Activity
             activity.startActivity(Intent(activity, DetailsActivity::class.java))
         }
-
     }
 
     override fun getItemCount(): Int {
