@@ -10,10 +10,10 @@ import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 //Помечаем, что это не просто интерфейс, а Dao-объект
 @Dao
 interface NotificationDao {
-    @Query("SELECT * FROM cached_data")
+    @Query("SELECT * FROM cached_data ORDER BY date")
     fun getCachedDataObservable(): Observable<List<NotificationsData>>
 
-    @Query("SELECT * FROM cached_data")
+    @Query("SELECT * FROM cached_data ORDER BY date")
     fun getCachedData(): List<NotificationsData>
 
     //Кладём списком в БД, в случае конфликта перезаписываем
@@ -23,6 +23,10 @@ interface NotificationDao {
     // Снять/убрать пометку
     @Query("UPDATE cached_data SET marked = marked * (-1) WHERE id = :id")
     fun updateMarkedById(id : Int)
+
+    // Снять/убрать пометку
+    @Query("UPDATE cached_data SET marked = :mark_val WHERE id = :id")
+    fun setMarkedById(mark_val : Int, id: Int)
 
     // Получить состояние пометки уведомления
     @Query("SELECT marked FROM cached_data WHERE id = :id")

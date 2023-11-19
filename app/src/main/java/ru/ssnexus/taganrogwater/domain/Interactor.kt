@@ -63,11 +63,17 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
             var element = doc.select("table").get(1)
             val rows = element.select("tr")
             var notifications = ArrayList<String>()
+
             rows.forEach{row ->
                 notifications.add(row.text())
             }
             notifications.removeLast()
-            repo.clearData()
+
+//            notifications.add("09.11.23 dfgsthbwsrhfnfjhj")
+//            notifications.add("07.11.23 drrrrhhjjkk")
+//            notifications.add("06.11.23 addddddsdfgarghasehtd")
+
+//            repo.clearData()
             if (!notifications.isEmpty()) repo.putToDb(notifications)
         }
     }

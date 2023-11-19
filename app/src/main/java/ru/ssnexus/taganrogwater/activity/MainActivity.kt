@@ -1,10 +1,13 @@
 package ru.ssnexus.taganrogwater.activity
 
+import android.app.ProgressDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -21,9 +24,13 @@ import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
 import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import ru.ssnexus.taganrogwater.utils.Utils
+import ru.ssnexus.taganrogwater.utils.Utils.strDateCompare
 import ru.ssnexus.taganrogwater.viewmodel.MainViewModel
 import timber.log.Timber
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
@@ -33,11 +40,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     val autoDisposable = AutoDisposable()
+    private lateinit var progressDialog: ProgressDialog
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var notificationAdapter: NotificationAdapter
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -80,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initLayout(){
         setTheme(R.style.Theme_TaganrogWater)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -104,6 +114,7 @@ class MainActivity : AppCompatActivity() {
             if(!it.isEmpty()) {
                 Timber.d("notificationAdapter.updateNotificationsList(it)")
                 notificationAdapter.updateNotificationsList(it)
+                progressDialog.dismiss()
             }
         }
 
@@ -126,6 +137,10 @@ class MainActivity : AppCompatActivity() {
             true
         }
         App.instance.interactor.initDataObservable(this)
+
+        progressDialog = ProgressDialog(this)
+        progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
+        progressDialog.show()
     }
 
     override fun onBackPressed() {

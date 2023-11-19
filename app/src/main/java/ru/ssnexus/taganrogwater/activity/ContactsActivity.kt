@@ -35,19 +35,19 @@ class ContactsActivity : AppCompatActivity() {
         binding = ActivityContactsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Contacts"
+        supportActionBar?.title = resources.getString(R.string.contacts)
 
         webView = binding.webView
         progressBar = binding.progressBar
         progressDialog = ProgressDialog(this)
-        progressDialog.setMessage("Loading Please Wait...")
+        progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
         var webSettings: WebSettings = webView.settings
         webSettings.builtInZoomControls = true
         webSettings.javaScriptEnabled = true
         webView.webViewClient = MyWebViewClient()
 
         if(Utils.checkConnection(this)) loadPage() else
-            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, resources.getString(R.string.no_connection), Toast.LENGTH_SHORT).show()
 
         webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
@@ -62,7 +62,7 @@ class ContactsActivity : AppCompatActivity() {
         }
         webView.setDownloadListener { s, s2, s3, s4, l ->
             if(s != null){
-                var intent = Intent (Intent.ACTION_VIEW)
+                val intent = Intent (Intent.ACTION_VIEW)
                 intent.setData(Uri.parse(s))
                 startActivity(intent)
             }

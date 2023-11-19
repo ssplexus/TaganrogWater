@@ -12,11 +12,13 @@
     <string name="do_you_want_to_set_mark">Вы хотите включить напоминание о событии?</string>
     <string name="do_you_want_to_remove_mark">Вы хотите убрать напоминание о событии?</string>
     <string name="do_you_want_to_remove_notification">Вы хотите удалить событие из архива?</string>
+    <string name="loading_please_wait">Загрузка пожалуйста подождите...</string>
     <string name="no_connection">Нет связи</string>
 
     <string name="about">О программе</string>
 
     <string name="tagWaterlink">Информация с сайта\nМуниципальное унитарное предприятие\n&quot;Управление Водоканал&quot;\nг. Таганрог</string>
+    <string name="clear_archive">Очистить\nархив</string>
 
     <string-array name="periods">
         <item>6 часов</item>

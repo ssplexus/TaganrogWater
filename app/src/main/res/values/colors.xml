@@ -14,5 +14,6 @@
     <color name="light_water">#29A2E5</color>
     <color name="dark_water">#2B76A0</color>
     <color name="bright_water">#E9EFF8</color>
+    <color name="warm">#FF7043</color>
 
 </resources>

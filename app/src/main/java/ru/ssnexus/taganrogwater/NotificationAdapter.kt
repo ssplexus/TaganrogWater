@@ -16,6 +16,7 @@ import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.WaterInfoViewBinding
 import ru.ssnexus.taganrogwater.domain.Interactor
 import ru.ssnexus.taganrogwater.utils.Utils
+import timber.log.Timber
 import kotlin.system.exitProcess
 
 class NotificationAdapter(private val context: Context, private var notificationsData: ArrayList<NotificationsData>):RecyclerView.Adapter<NotificationAdapter.NotificationHolder>() {
@@ -38,7 +39,10 @@ class NotificationAdapter(private val context: Context, private var notification
         val marked = notificationsData[position].marked
         when (marked){
             -1 -> holder.actionBtn.setImageResource(R.drawable.star_outline_icon)
-             0 -> holder.actionBtn.setImageResource(R.drawable.delete_icon)
+             0 -> {
+                 holder.actionBtn.setImageResource(R.drawable.delete_icon)
+                 holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
+             }
              1 -> holder.actionBtn.setImageResource(R.drawable.star_rate_icon)
         }
 
@@ -62,8 +66,11 @@ class NotificationAdapter(private val context: Context, private var notification
                         job.join()
                     }
 
-                    Utils.showSettingsDialog(context)
-                    dialog.dismiss()
+                    if(marked < 0 ) {
+                        Utils.showSettingsDialog(context)
+                        dialog.dismiss()
+                    }
+
                 }
                 .setNegativeButton(context.getString(R.string.no)){ dialog, _ ->
                     dialog.dismiss()
@@ -92,8 +99,9 @@ class NotificationAdapter(private val context: Context, private var notification
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateNotificationsList(_notificationList: List<NotificationsData>){
+        Timber.d("updateNotificationsList")
         notificationsData = ArrayList()
-        notificationsData.addAll(_notificationList)
+        notificationsData.addAll(_notificationList.reversed())
         notifyDataSetChanged()
     }
 }

@@ -36,7 +36,7 @@ class DetailsActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Timber.d("Activity Destroyed")
+        Timber.d("DetailsActivity Destroyed")
         super.onDestroy()
     }
 }
