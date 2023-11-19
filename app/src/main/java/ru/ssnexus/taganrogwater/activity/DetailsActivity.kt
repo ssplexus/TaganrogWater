@@ -1,6 +1,7 @@
 package ru.ssnexus.taganrogwater.activity
 
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import ru.ssnexus.taganrogwater.R
@@ -21,6 +22,7 @@ class DetailsActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.notifDate.text = notificationDate
         binding.notifBody.text = notificationBody
+        binding.notifBody.movementMethod = ScrollingMovementMethod()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }

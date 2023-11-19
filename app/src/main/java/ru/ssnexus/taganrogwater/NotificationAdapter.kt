@@ -38,12 +38,18 @@ class NotificationAdapter(private val context: Context, private var notification
         val id: Int = notificationsData[position].id
         val marked = notificationsData[position].marked
         when (marked){
-            -1 -> holder.actionBtn.setImageResource(R.drawable.star_outline_icon)
+            -1 -> {
+                holder.actionBtn.setImageResource(R.drawable.star_outline_icon)
+                holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.water))
+            }
              0 -> {
                  holder.actionBtn.setImageResource(R.drawable.delete_icon)
                  holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
              }
-             1 -> holder.actionBtn.setImageResource(R.drawable.star_rate_icon)
+             1 -> {
+                 holder.actionBtn.setImageResource(R.drawable.star_rate_icon)
+                 holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.water))
+             }
         }
 
         holder.actionBtn.setOnClickListener {
@@ -101,7 +107,17 @@ class NotificationAdapter(private val context: Context, private var notification
     fun updateNotificationsList(_notificationList: List<NotificationsData>){
         Timber.d("updateNotificationsList")
         notificationsData = ArrayList()
-        notificationsData.addAll(_notificationList.reversed())
+        notificationsData.addAll(_notificationList)
+        if(!App.instance.interactor.getShowArchivePref()){
+            val iterator = notificationsData.iterator()
+            while (iterator.hasNext()){
+                val item = iterator.next()
+                if(item.marked == 0) iterator.remove()
+            }
+        }
+        notifyDataSetChanged()
+    }
+    fun updateRecyclerView(){
         notifyDataSetChanged()
     }
 }

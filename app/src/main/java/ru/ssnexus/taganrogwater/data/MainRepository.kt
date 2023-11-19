@@ -76,6 +76,10 @@ class MainRepository(private val notificationDao: NotificationDao) {
         notificationDao.removeNotificationById(id)
     }
 
+    fun removeArchiveData(){
+        notificationDao.removeArchiveData()
+    }
+
     fun clearData(){
         notificationDao.nukeData()
     }

@@ -22,6 +22,8 @@ import timber.log.Timber
 import java.net.URL
 
 class Interactor(private val repo: MainRepository, private val prefs: PreferencesProvider) {
+
+    private val notificationCachedList = ArrayList<NotificationsData>()
     private var notificationLiveData =  MutableLiveData <List<NotificationsData>>()
     init {
 
@@ -35,18 +37,20 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
                 }.subscribe{
                 if(!it.isEmpty()) {
                     Timber.d("notificationLiveData.postValue(it)")
+                    notificationCachedList.clear()
+                    notificationCachedList.addAll(it)
                     notificationLiveData.postValue(it)
                 }
             }.addTo(main.autoDisposable)
     }
+
+    fun getNotificationCachedList() = notificationCachedList
 
     fun getNotificationLiveData() = notificationLiveData
 
     fun updateMarkedStateById(id: Int){
         repo.updateMarkedStateById(id)
     }
-
-    fun getMarkedStateById(id: Int) = repo.getMarkedStateById(id)
 
     fun removeNotificationById(id: Int){
         repo.removeNotificationById(id)
@@ -77,4 +81,22 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
             if (!notifications.isEmpty()) repo.putToDb(notifications)
         }
     }
+
+    fun setShowArchivePref(flag: Boolean){
+        prefs.setShowArchivePref(flag)
+    }
+    fun setShowNotifPref(flag: Boolean){
+        prefs.setShowNotifPref(flag)
+    }
+    fun getShowArchivePref():Boolean = prefs.getShowArchivePref()
+    fun getShowNotifPref():Boolean = prefs.getShowNotifPref()
+
+    fun removeArchive(){
+        repo.removeArchiveData()
+    }
+
+    fun clearCachedData() {
+        repo.clearData()
+    }
+
 }

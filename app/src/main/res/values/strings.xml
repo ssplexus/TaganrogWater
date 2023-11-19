@@ -2,7 +2,7 @@
     <string name="app_name">Оперативная информация</string>
     <string name="open">Открыть</string>
     <string name="close">Закрыть</string>
-    <string name="settings">Натройки</string>
+    <string name="settings">Наcтройки</string>
     <string name="contacts">Контакты</string>
     <string name="exit">Выход</string>
     <string name="period_settings">Уведомление</string>
@@ -14,6 +14,9 @@
     <string name="do_you_want_to_remove_notification">Вы хотите удалить событие из архива?</string>
     <string name="loading_please_wait">Загрузка пожалуйста подождите...</string>
     <string name="no_connection">Нет связи</string>
+
+    <string name="do_you_want_to_delete_archive">Вы уверены, что хотите удалить архив?</string>
+    <string name="archive_delete">Удаление архива</string>
 
     <string name="about">О программе</string>
 

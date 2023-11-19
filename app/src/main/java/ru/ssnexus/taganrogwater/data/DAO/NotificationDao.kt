@@ -10,7 +10,7 @@ import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 //Помечаем, что это не просто интерфейс, а Dao-объект
 @Dao
 interface NotificationDao {
-    @Query("SELECT * FROM cached_data ORDER BY date")
+    @Query("SELECT * FROM cached_data ORDER BY date DESC")
     fun getCachedDataObservable(): Observable<List<NotificationsData>>
 
     @Query("SELECT * FROM cached_data ORDER BY date")
@@ -35,6 +35,10 @@ interface NotificationDao {
     // Очистка таблицы
     @Query("DELETE FROM cached_data")
     fun nukeData()
+
+    // Очистка архивных данных
+    @Query("DELETE FROM cached_data WHERE marked = 0")
+    fun removeArchiveData()
 
     // Очистка таблицы
     @Query("DELETE FROM cached_data WHERE id = :id")

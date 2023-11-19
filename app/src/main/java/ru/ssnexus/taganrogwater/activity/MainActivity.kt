@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.BuildConfig
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
+import org.checkerframework.checker.units.qual.A
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import ru.ssnexus.taganrogwater.App
@@ -111,11 +112,9 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_SHORT).show()
 
         App.instance.interactor.getNotificationLiveData().observe(this){
-            if(!it.isEmpty()) {
-                Timber.d("notificationAdapter.updateNotificationsList(it)")
-                notificationAdapter.updateNotificationsList(it)
-                progressDialog.dismiss()
-            }
+            Timber.d("notificationAdapter.updateNotificationsList(it)")
+            notificationAdapter.updateNotificationsList(it)
+            if(progressDialog.isShowing) progressDialog.dismiss()
         }
 
         binding.navView.setNavigationItemSelectedListener {
@@ -145,5 +144,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if(binding.navView.isShown) binding.root.closeDrawers() else  closeApp()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onResume() {
+        super.onResume()
+        notificationAdapter.updateNotificationsList(App.instance.interactor.getNotificationCachedList())
     }
 }
