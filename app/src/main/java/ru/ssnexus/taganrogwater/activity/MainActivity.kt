@@ -2,11 +2,16 @@ package ru.ssnexus.taganrogwater.activity
 
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.system.Os.link
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -50,12 +55,10 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         if(BuildConfig.DEBUG)
         {
             Timber.plant(Timber.DebugTree())
         }
-
         autoDisposable.bindTo(this.lifecycle)
         initLayout()
     }
@@ -78,13 +81,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.actions_menu, menu)
+        val linkText = findViewById<TextView>(R.id.infoText)
+        linkText.movementMethod = LinkMovementMethod.getInstance()
         return super.onCreateOptionsMenu(menu)
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        val id = item.itemId
-//        if (id == R.id.archive){
-//            return true
-//        }
+        val id = item.itemId
+        if (id == R.id.actionId){
+            startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+            return true
+        }
         if(toggle.onOptionsItemSelected(item))
             return true
         return super.onOptionsItemSelected(item)

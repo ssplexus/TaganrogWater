@@ -6,6 +6,7 @@
     <string name="contacts">Контакты</string>
     <string name="exit">Выход</string>
     <string name="period_settings">Уведомление</string>
+    <string name="archive_info">Архивная информация</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="do_you_want_to_exit">Вы хотите выйти?</string>
@@ -20,7 +21,7 @@
 
     <string name="about">О программе</string>
 
-    <string name="tagWaterlink">Информация с сайта\nМуниципальное унитарное предприятие\n&quot;Управление Водоканал&quot;\nг. Таганрог</string>
+    <string name="tagWaterlink">Информация с <a href="http://www.tgnvoda.ru/avarii.php">сайта</a>\nМуниципальное унитарное предприятие\n&quot;Управление Водоканал&quot;\nг. Таганрог</string>
     <string name="clear_archive">Очистить\nархив</string>
 
     <string-array name="periods">

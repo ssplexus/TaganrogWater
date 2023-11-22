@@ -92,6 +92,8 @@ class NotificationAdapter(private val context: Context, private var notification
 
 //        holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
         holder.itemContainer.setOnClickListener {
+            DetailsActivity.notificationId = id
+            DetailsActivity.notificationMarked = marked
             DetailsActivity.notificationDate = holder.date.text as String
             DetailsActivity.notificationBody = holder.notification.text as String
             val activity = holder.itemView.context as Activity

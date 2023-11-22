@@ -56,6 +56,8 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
         repo.removeNotificationById(id)
     }
 
+    fun getMarkedStateById(id: Int) = repo.getMarkedStateById(id)
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun getData(){
         // Create a new coroutine scope
