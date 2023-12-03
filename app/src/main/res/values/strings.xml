@@ -23,6 +23,9 @@
 
     <string name="tagWaterlink">Информация с <a href="http://www.tgnvoda.ru/avarii.php">сайта</a>\nМуниципальное унитарное предприятие\n&quot;Управление Водоканал&quot;\nг. Таганрог</string>
     <string name="clear_archive">Очистить\nархив</string>
+    <string name="chack_new_data">Актуализировать данные</string>
+    <string name="show_notifications">Показывать уведомления</string>
+    <string name="show_archive">Отображать архив</string>
 
     <string-array name="periods">
         <item>6 часов</item>

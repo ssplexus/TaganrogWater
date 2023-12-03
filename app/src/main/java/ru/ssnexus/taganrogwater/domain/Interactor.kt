@@ -1,9 +1,12 @@
 package ru.ssnexus.taganrogwater.domain
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
-import com.bumptech.glide.Glide.init
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
@@ -11,12 +14,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import ru.ssnexus.taganrogwater.App
-import ru.ssnexus.taganrogwater.AppConstants
+import ru.ssnexus.taganrogwater.*
 import ru.ssnexus.taganrogwater.activity.MainActivity
 import ru.ssnexus.taganrogwater.data.MainRepository
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.preferences.PreferencesProvider
+import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
 import ru.ssnexus.taganrogwater.utils.addTo
 import timber.log.Timber
 import java.net.URL
@@ -75,8 +78,9 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
             }
             notifications.removeLast()
 
-//            notifications.add("09.11.23 dfgsthbwsrhfnfjhj")
-//            notifications.add("07.11.23 drrrrhhjjkk")
+//            notifications.add("11.12.23 ssd ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")
+//
+//            notifications.add("12.12.23 ssd ewtttttttt ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")//            notifications.add("07.11.23 drrrrhhjjkk")
 //            notifications.add("06.11.23 addddddsdfgarghasehtd")
 
 //            repo.clearData()
@@ -90,8 +94,13 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     fun setShowNotifPref(flag: Boolean){
         prefs.setShowNotifPref(flag)
     }
-    fun getShowArchivePref():Boolean = prefs.getShowArchivePref()
-    fun getShowNotifPref():Boolean = prefs.getShowNotifPref()
+    fun setCheckDataPref(flag: Boolean){
+        prefs.setCheckDataPref(flag)
+    }
+
+    fun getShowArchivePref(): Boolean = prefs.getShowArchivePref()
+    fun getShowNotifPref(): Boolean = prefs.getShowNotifPref()
+    fun getCheckDataPref(): Boolean = prefs.getCheckDatafPref()
 
     fun removeArchive(){
         repo.removeArchiveData()
@@ -100,5 +109,31 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     fun clearCachedData() {
         repo.clearData()
     }
+
+    fun createNotificationRightNow(date: String, notif: String){
+        val intent = Intent(App.instance.applicationContext, NotificationReceiver::class.java)
+        val title = date
+        val message = notif
+        intent.putExtra(AppConstants.TITLE_EXTRA, title)
+        intent.putExtra(AppConstants.MESSAGE_EXTRA, message)
+        val pendingIntent = PendingIntent.getBroadcast(
+            App.instance.applicationContext,
+            AppConstants.NOTIFICATION_ID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        //Получаем доступ к AlarmManager
+        val alarmManager =
+            App.instance.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        //Устанавливаем Alarm
+        alarmManager.setExact(
+            AlarmManager.RTC_WAKEUP,
+            1000,
+            pendingIntent
+        )
+    }
+
 
 }

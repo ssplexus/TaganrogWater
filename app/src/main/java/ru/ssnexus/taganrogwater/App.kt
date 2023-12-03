@@ -1,10 +1,15 @@
 package ru.ssnexus.taganrogwater
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.res.Configuration
 import android.os.Build
 import androidx.room.Room
 import androidx.room.Room.databaseBuilder
+import ru.ssnexus.taganrogwater.AppConstants.CHANNEL_DESCR
+import ru.ssnexus.taganrogwater.AppConstants.CHANNEL_ID
+import ru.ssnexus.taganrogwater.AppConstants.CHANNEL_NAME
 import ru.ssnexus.taganrogwater.data.MainRepository
 import ru.ssnexus.taganrogwater.data.db.AppDatabase
 import ru.ssnexus.taganrogwater.domain.Interactor
@@ -29,6 +34,8 @@ class App: Application() {
 
         instance = this
 
+        createNotificationChannel()
+
         repository = MainRepository(databaseBuilder(
             this,
             AppDatabase::class.java,
@@ -39,6 +46,22 @@ class App: Application() {
 
         interactor = Interactor(repository, prefsProvider)
 
+    }
+
+
+    fun createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //Задаем имя, описание и важность канала
+            //Создаем канал, передав в параметры его ID(строка), имя(строка), важность(константа)
+            val mChannel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
+//            mChannel.setSound(null, null)
+            //Отдельно задаем описание
+            mChannel.description = CHANNEL_DESCR
+            //Получаем доступ к менеджеру нотификаций
+            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            //Регистрируем канал
+            notificationManager.createNotificationChannel(mChannel)
+        }
     }
 
     // Вызывается при изменении конфигурации, например, поворот

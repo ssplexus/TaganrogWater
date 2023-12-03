@@ -67,6 +67,15 @@ class DetailsActivity : AppCompatActivity() {
                 }
             }
         }
+
+        if(savedInstanceState == null)
+        {
+            val extras = intent.extras
+            if(extras != null)
+            {
+
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -11,8 +11,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.ssnexus.taganrogwater.App
+import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivitySettingsBinding
+import ru.ssnexus.taganrogwater.utils.NotificationHelper
+import ru.ssnexus.taganrogwater.utils.NotificationHelper.cancelCheckDataAlarm
+import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarm
 import timber.log.Timber
 import kotlin.system.exitProcess
 
@@ -29,6 +33,7 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.showArchive.isChecked = App.instance.interactor.getShowArchivePref()
         binding.showNotifications.isChecked = App.instance.interactor.getShowNotifPref()
+        binding.checkData.isChecked = App.instance.interactor.getCheckDataPref()
         
         binding.showArchive.setOnClickListener {
             App.instance.interactor.setShowArchivePref((it as SwitchCompat).isChecked)
@@ -36,6 +41,14 @@ class SettingsActivity : AppCompatActivity() {
         binding.showNotifications.setOnClickListener {
             App.instance.interactor.setShowNotifPref((it as SwitchCompat).isChecked)
         }
+        binding.checkData.setOnClickListener {
+            App.instance.interactor.setCheckDataPref((it as SwitchCompat).isChecked)
+            if((it as SwitchCompat).isChecked)
+                NotificationHelper.enableCheckDataAlarm(App.instance.applicationContext)
+            else
+                NotificationHelper.disableCheckDataAlarm(App.instance.applicationContext)
+        }
+
         binding.clearArchive.setOnClickListener {
 
             val builder = MaterialAlertDialogBuilder(this)

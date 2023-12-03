@@ -7,17 +7,19 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.WaterInfoViewBinding
-import ru.ssnexus.taganrogwater.domain.Interactor
 import ru.ssnexus.taganrogwater.utils.Utils
 import timber.log.Timber
-import kotlin.system.exitProcess
+import java.text.ParseException
+import java.text.SimpleDateFormat
 
 class NotificationAdapter(private val context: Context, private var notificationsData: ArrayList<NotificationsData>):RecyclerView.Adapter<NotificationAdapter.NotificationHolder>() {
     class NotificationHolder(binding: WaterInfoViewBinding):RecyclerView.ViewHolder(binding.root) {
@@ -34,6 +36,7 @@ class NotificationAdapter(private val context: Context, private var notification
         return NotificationHolder(WaterInfoViewBinding.inflate(LayoutInflater.from(context), parent, false))
     }
 
+    @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: NotificationAdapter.NotificationHolder, position: Int) {
         val id: Int = notificationsData[position].id
         val marked = notificationsData[position].marked
@@ -87,7 +90,15 @@ class NotificationAdapter(private val context: Context, private var notification
             customDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.resources.getColor(R.color.dark_water))
         }
 
-        holder.date.text = notificationsData[position].date
+        val formatter = SimpleDateFormat("dd.MM.yyyy")
+        try{
+            val dateFromNotif = formatter.format(notificationsData[position].date)
+            holder.date.text = dateFromNotif
+        } catch (e: ParseException){
+            e.printStackTrace()
+        }
+
+
         holder.notification.text = notificationsData[position].notifiction
 
 //        holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
@@ -110,6 +121,7 @@ class NotificationAdapter(private val context: Context, private var notification
         Timber.d("updateNotificationsList")
         notificationsData = ArrayList()
         notificationsData.addAll(_notificationList)
+
         if(!App.instance.interactor.getShowArchivePref()){
             val iterator = notificationsData.iterator()
             while (iterator.hasNext()){

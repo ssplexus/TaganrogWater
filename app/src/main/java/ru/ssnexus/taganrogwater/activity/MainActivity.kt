@@ -1,17 +1,16 @@
 package ru.ssnexus.taganrogwater.activity
 
 import android.app.ProgressDialog
+import android.content.ComponentName
 import android.content.Intent
-import android.graphics.Color
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.system.Os.link
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -20,23 +19,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.BuildConfig
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.launch
-import org.checkerframework.checker.units.qual.A
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import ru.ssnexus.taganrogwater.App
+import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.NotificationAdapter
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
+import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
 import ru.ssnexus.taganrogwater.utils.AutoDisposable
+import ru.ssnexus.taganrogwater.utils.NotificationHelper
+import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarm
 import ru.ssnexus.taganrogwater.utils.Utils
-import ru.ssnexus.taganrogwater.utils.Utils.strDateCompare
 import ru.ssnexus.taganrogwater.viewmodel.MainViewModel
 import timber.log.Timber
-import java.net.URL
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
@@ -68,7 +62,9 @@ class MainActivity : AppCompatActivity() {
         builder.setTitle(getString(R.string.exit))
             .setMessage(getString(R.string.do_you_want_to_exit))
             .setPositiveButton(getString(R.string.yes)){ _, _ ->
-                exitProcess(1)
+//                exitProcess(1)
+                this@MainActivity.finish()
+                exitProcess(0)
             }
             .setNegativeButton(getString(R.string.no)){ dialog, _ ->
                 dialog.dismiss()
@@ -146,6 +142,11 @@ class MainActivity : AppCompatActivity() {
         progressDialog = ProgressDialog(this)
         progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
         progressDialog.show()
+
+//        NotificationHelper.createNotificationEvent(this, 5000, "01.02.2023", "XoXo")
+
+        if(App.instance.interactor.getCheckDataPref())
+            NotificationHelper.enableCheckDataAlarm(App.instance.applicationContext)
     }
 
     override fun onBackPressed() {
