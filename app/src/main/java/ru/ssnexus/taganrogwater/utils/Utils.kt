@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
@@ -11,8 +12,11 @@ import android.os.Build
 import android.view.Window
 import android.widget.*
 import com.google.common.primitives.UnsignedBytes.toInt
+import kotlinx.coroutines.*
 import org.checkerframework.checker.units.qual.s
+import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.R
+import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import java.io.IOException
 
 object Utils {
@@ -40,7 +44,7 @@ object Utils {
         return false
     }
 
-    fun showSettingsDialog(context: Context){
+    fun showSettingsDialog(context: Context, dismissListener: DialogInterface.OnDismissListener) {
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
@@ -66,11 +70,19 @@ object Utils {
         everydayRadioBtn.isChecked = true
 
         okBtn.setOnClickListener {
+            var period = 24
+            if (!everydayRadioBtn.isChecked) when (periodSpinner.selectedItemPosition) {
+                0 -> period = 12
+                1 -> period = 8
+                else -> period = 4
+            }
+            DetailsActivity.notificationMarked = period
             dialog.dismiss()
         }
         cancelBtn.setOnClickListener {
             dialog.dismiss()
         }
+        dialog.setOnDismissListener(dismissListener)
         dialog.show()
     }
 
@@ -98,3 +110,5 @@ object Utils {
         return 0
     }
 }
+//                val randId = random.nextInt(9999 - 1000) + 1000
+//                val randId = (Date().time / 1000L % Int.MAX_VALUE).toInt()

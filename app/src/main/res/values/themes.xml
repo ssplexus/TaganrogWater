@@ -22,4 +22,21 @@
     </style>
 
 
+    <style name="MaterialAlertDialog_Center" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogTitlePanelStyle">@style/Title.Panel.Center</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Message.Center</item>
+    </style>
+
+    <style name="Title.Panel.Center" parent="MaterialAlertDialog.MaterialComponents.Title.Panel">
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="Message.Center" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="Button.Center" parent="MaterialAlertDialog.MaterialComponents.Title.Icon">
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
 </resources>

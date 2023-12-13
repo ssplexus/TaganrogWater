@@ -55,11 +55,17 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
         repo.updateMarkedStateById(id)
     }
 
+    fun setMarkedStateById(id: Int, value: Int){
+        repo.setMarkedStateById(id, value)
+    }
+
     fun removeNotificationById(id: Int){
         repo.removeNotificationById(id)
     }
 
-    fun getMarkedStateById(id: Int) = repo.getMarkedStateById(id)
+    fun getMarkedStateById(id: Int):Int {
+        return repo.getMarkedStateById(id)
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getData(){
@@ -78,10 +84,9 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
             }
             notifications.removeLast()
 
-//            notifications.add("11.12.23 ssd ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")
-//
+//            notifications.add("19.12.23 ssd ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")
 //            notifications.add("12.12.23 ssd ewtttttttt ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")//            notifications.add("07.11.23 drrrrhhjjkk")
-//            notifications.add("06.11.23 addddddsdfgarghasehtd")
+//            notifications.add("07.11.23 addddddsdfgarghasehtd")
 
 //            repo.clearData()
             if (!notifications.isEmpty()) repo.putToDb(notifications)
@@ -97,10 +102,14 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     fun setCheckDataPref(flag: Boolean){
         prefs.setCheckDataPref(flag)
     }
+    fun setFirstLaunch(flag: Boolean){
+        prefs.setFirstLaunchPref(flag)
+    }
 
     fun getShowArchivePref(): Boolean = prefs.getShowArchivePref()
     fun getShowNotifPref(): Boolean = prefs.getShowNotifPref()
     fun getCheckDataPref(): Boolean = prefs.getCheckDatafPref()
+    fun getFirstLaunch(): Boolean = prefs.getFirstLaunchfPref()
 
     fun removeArchive(){
         repo.removeArchiveData()
@@ -109,6 +118,8 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     fun clearCachedData() {
         repo.clearData()
     }
+
+    fun checkNotificationId(id: Int) = repo.checkNotificationId(id)
 
     fun createNotificationRightNow(date: String, notif: String){
         val intent = Intent(App.instance.applicationContext, NotificationReceiver::class.java)

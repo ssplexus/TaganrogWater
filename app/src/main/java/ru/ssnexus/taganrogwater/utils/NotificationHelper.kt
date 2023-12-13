@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.google.android.gms.common.wrappers.Wrappers.packageManager
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
+import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import ru.ssnexus.taganrogwater.activity.MainActivity
 import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
 import timber.log.Timber
@@ -31,8 +32,11 @@ object NotificationHelper {
         val title = date
         val message = notif//.take(256)
 
-        val mIntent = Intent(context, MainActivity::class.java)
+        val mIntent = Intent(context, DetailsActivity::class.java)
         mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        mIntent.putExtra(AppConstants.ID_EXTRA, id)
+        mIntent.putExtra(AppConstants.TITLE_EXTRA, title)
+        mIntent.putExtra(AppConstants.MESSAGE_EXTRA, message)
 
         val pendingIntent =
             PendingIntent.getActivity(context, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -118,6 +122,30 @@ object NotificationHelper {
         intent.action = AppConstants.ACTION_CHECKDATA
         val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
         alarmManager.cancel(pendingIntent)
+    }
+
+    fun setEnableReceiver(context: Context, flag: Boolean){
+        val receiver = ComponentName(context, NotificationReceiver::class.java)
+        if(flag){
+            if(context.packageManager.getComponentEnabledSetting(receiver) !=
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+                context.packageManager.setComponentEnabledSetting(
+                    receiver,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP
+                )
+            }
+        }
+        else{
+            if(context.packageManager.getComponentEnabledSetting(receiver) !=
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED){
+                context.packageManager.setComponentEnabledSetting(
+                    receiver,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP
+                )
+            }
+        }
     }
 
     fun enableCheckDataAlarm(context: Context){

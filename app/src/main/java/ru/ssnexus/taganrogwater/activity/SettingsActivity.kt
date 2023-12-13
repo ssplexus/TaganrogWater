@@ -44,9 +44,9 @@ class SettingsActivity : AppCompatActivity() {
         binding.checkData.setOnClickListener {
             App.instance.interactor.setCheckDataPref((it as SwitchCompat).isChecked)
             if((it as SwitchCompat).isChecked)
-                NotificationHelper.enableCheckDataAlarm(App.instance.applicationContext)
+                NotificationHelper.cancelCheckDataAlarm(App.instance.applicationContext)
             else
-                NotificationHelper.disableCheckDataAlarm(App.instance.applicationContext)
+                NotificationHelper.createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
         }
 
         binding.clearArchive.setOnClickListener {

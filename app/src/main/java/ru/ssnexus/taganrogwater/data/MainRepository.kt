@@ -8,6 +8,7 @@ import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.data.DAO.NotificationDao
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
+import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,7 +20,8 @@ class MainRepository(private val notificationDao: NotificationDao) {
     @SuppressLint("SimpleDateFormat")
     fun putToDb(list: ArrayList<String>) {
         val notificationsCached = notificationDao.getCachedData() as ArrayList<NotificationsData>
-//        val notificationsUpdateList = notificationsCached
+        val cacheSize = notificationsCached.size
+        var newId = cacheSize
         val newNotificationsList = ArrayList<NotificationsData>()
 
         list.forEach {
@@ -53,7 +55,7 @@ class MainRepository(private val notificationDao: NotificationDao) {
                             }
 
                             if (!ignore)
-                                newNotificationsList.add(NotificationsData(date = date.time, notifiction = notification))
+                                newNotificationsList.add(NotificationsData(id = newId++, date = date.time, notifiction = notification))
                         }
                     } catch (e:ParseException){
                         e.printStackTrace()
@@ -66,36 +68,22 @@ class MainRepository(private val notificationDao: NotificationDao) {
             iterator.next().marked = 0
         }
 
-        if(newNotificationsList.size > 3){
+        if(cacheSize != 0) {
             val formatter = SimpleDateFormat("dd.MM.yyyy")
-            try{
-                val dateFromNotif = formatter.format(newNotificationsList.first().date)
-                val random = Random()
-                val randId = random.nextInt(9999 - 1000) + 1000
-                //                val randId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
-                NotificationHelper.createNotification(App.instance.applicationContext, randId, dateFromNotif, newNotificationsList.first().notifiction)
-            } catch (e: ParseException){
-                e.printStackTrace()
-            }
-        }else
             newNotificationsList.forEach {
-                val formatter = SimpleDateFormat("dd.MM.yyyy")
-                try{
+                try {
                     val dateFromNotif = formatter.format(it.date)
-                    val random = Random()
-                    val randId = random.nextInt(9999 - 1000) + 1000
-                    //                val randId = (Date().time / 1000L % Int.MAX_VALUE).toInt()
-                    NotificationHelper.createNotification(App.instance.applicationContext, randId, dateFromNotif, it.notifiction)
-                } catch (e: ParseException){
+                    NotificationHelper.createNotification(
+                        App.instance.applicationContext,
+                        it.id,
+                        dateFromNotif,
+                        it.notifiction
+                    )
+                } catch (e: ParseException) {
                     e.printStackTrace()
                 }
             }
-
-//        if(!notificationsCached.isEmpty())
-//        {
-//
-//        }
-
+        }
 
         notificationsCached.addAll(newNotificationsList)
         if(!notificationsCached.isEmpty())
@@ -105,6 +93,10 @@ class MainRepository(private val notificationDao: NotificationDao) {
 
     fun updateMarkedStateById(id : Int) {
         notificationDao.updateMarkedById(id)
+    }
+
+    fun setMarkedStateById(id : Int, value: Int) {
+        notificationDao.setMarkedById(id, value)
     }
 
     fun getMarkedStateById(id: Int) = notificationDao.getMarkedStateById(id)
@@ -122,4 +114,6 @@ class MainRepository(private val notificationDao: NotificationDao) {
     }
 
     fun getRowCount() = notificationDao.getSize()
+
+    fun checkNotificationId(id: Int) = notificationDao.checkId(id)
 }

@@ -11,7 +11,7 @@ import java.util.*
 @Parcelize
 @Entity(tableName = "cached_data", indices = [Index(value = ["id"], unique = true)])
 data class NotificationsData(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = false) val id: Int = 0,
     @ColumnInfo(name = "marked") var marked:Int = -1,
     @ColumnInfo(name = "date") val date: Long = 0,
     @ColumnInfo(name = "notifiction") val notifiction: String

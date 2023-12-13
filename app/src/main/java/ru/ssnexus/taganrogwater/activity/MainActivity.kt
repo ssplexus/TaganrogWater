@@ -143,10 +143,30 @@ class MainActivity : AppCompatActivity() {
         progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
         progressDialog.show()
 
-//        NotificationHelper.createNotificationEvent(this, 5000, "01.02.2023", "XoXo")
+        if(App.instance.interactor.getFirstLaunch())
+        {
+            NotificationHelper.setEnableReceiver(App.instance.applicationContext, true )
+            App.instance.interactor.setFirstLaunch(false)
 
-        if(App.instance.interactor.getCheckDataPref())
-            NotificationHelper.enableCheckDataAlarm(App.instance.applicationContext)
+            val builder = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Center)
+            builder.setTitle(getString(R.string.greetings))
+                .setMessage(getString(R.string.first_launch_app))
+                .setPositiveButton(getString(R.string.ok)){ dialog, _ ->
+                    dialog.dismiss()
+                }
+            val customDialog = builder.create()
+            customDialog.show()
+            customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
+        }
+
+        if(App.instance.interactor.getCheckDataPref()){
+            if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
+                createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
+        }
+
+//        progressDialog.setOnDismissListener {  }
+
+//        NotificationHelper.createNotificationEvent(this, 5000, "01.02.2023", "XoXo")
     }
 
     override fun onBackPressed() {

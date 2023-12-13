@@ -17,7 +17,7 @@ class PreferencesProvider (context: Context) {
             preference.edit { putBoolean(KEY_SHOW_ARCHIVE_SWITCH, true) }
             preference.edit { putBoolean(KEY_SHOW_NOTIF_SWITCH, true) }
             preference.edit { putBoolean(KEY_CHECK_DATA_SWITCH, true) }
-            preference.edit { putBoolean(KEY_FIRST_LAUNCH, false) }
+//            preference.edit { putBoolean(KEY_FIRST_LAUNCH, false) }
             preference.edit { putLong(KEY_FIRST_LAUNCH_TIME, System.currentTimeMillis())}
         }
     }
@@ -34,10 +34,15 @@ class PreferencesProvider (context: Context) {
         preference.edit{putBoolean(KEY_CHECK_DATA_SWITCH, flag)}
         Timber.d("KEY_CHECK_DATA_SWITCH=%s", getCheckDatafPref())
     }
+    fun setFirstLaunchPref(flag: Boolean){
+        preference.edit{putBoolean(KEY_FIRST_LAUNCH, flag)}
+        Timber.d("KEY_FIRST_LAUNCH=%s", getCheckDatafPref())
+    }
 
     fun getShowArchivePref() = preference.getBoolean(KEY_SHOW_ARCHIVE_SWITCH, true)
     fun getShowNotifPref() = preference.getBoolean(KEY_SHOW_NOTIF_SWITCH, true)
     fun getCheckDatafPref() = preference.getBoolean(KEY_CHECK_DATA_SWITCH, true)
+    fun getFirstLaunchfPref() = preference.getBoolean(KEY_FIRST_LAUNCH, true)
 
     //Получить время первого запуска
     fun getFirstLaunchTime():Long{

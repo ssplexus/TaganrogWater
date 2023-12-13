@@ -26,7 +26,7 @@ interface NotificationDao {
 
     // Снять/убрать пометку
     @Query("UPDATE cached_data SET marked = :mark_val WHERE id = :id")
-    fun setMarkedById(mark_val : Int, id: Int)
+    fun setMarkedById(id: Int, mark_val : Int)
 
     // Получить состояние пометки уведомления
     @Query("SELECT marked FROM cached_data WHERE id = :id")
@@ -46,4 +46,7 @@ interface NotificationDao {
 
     @Query("SELECT COUNT(*) FROM cached_data")
     fun getSize(): Int
+
+    @Query("SELECT COUNT(*) FROM cached_data WHERE id = :id")
+    fun checkId(id:Int): Int
 }

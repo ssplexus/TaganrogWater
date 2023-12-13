@@ -3,16 +3,15 @@ package ru.ssnexus.taganrogwater
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.WaterInfoViewBinding
@@ -39,7 +38,7 @@ class NotificationAdapter(private val context: Context, private var notification
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: NotificationAdapter.NotificationHolder, position: Int) {
         val id: Int = notificationsData[position].id
-        val marked = notificationsData[position].marked
+        var marked = notificationsData[position].marked
         when (marked){
             -1 -> {
                 holder.actionBtn.setImageResource(R.drawable.star_outline_icon)
@@ -49,7 +48,7 @@ class NotificationAdapter(private val context: Context, private var notification
                  holder.actionBtn.setImageResource(R.drawable.delete_icon)
                  holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
              }
-             1 -> {
+             else -> {
                  holder.actionBtn.setImageResource(R.drawable.star_rate_icon)
                  holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.water))
              }
@@ -61,25 +60,43 @@ class NotificationAdapter(private val context: Context, private var notification
                 .setMessage(context.getString(
                     when(marked){
                         -1 -> R.string.do_you_want_to_set_mark
-                         1 -> R.string.do_you_want_to_remove_mark
+                         in (1..24) -> R.string.do_you_want_to_remove_mark
                         else -> R.string.do_you_want_to_remove_notification
                     }))
                 .setPositiveButton(context.getString(R.string.yes)){ dialog, _ ->
-                    runBlocking {
-                        val job: Job = launch(context = Dispatchers.Default) {
-                            when(marked){
-                                 0 -> App.instance.interactor.removeNotificationById(id)
-                                 else -> App.instance.interactor.updateMarkedStateById(id)
+                    when(marked) {
+                        0 ->{
+                            CoroutineScope(Dispatchers.IO).launch {
+                                App.instance.interactor.removeNotificationById(id)
                             }
                         }
-                        job.join()
+                        else->{
+                                when (marked) {
+                                    -1 -> {
+                                        Utils.showSettingsDialog(context, DialogInterface.OnDismissListener {
+                                            marked = DetailsActivity.notificationMarked
+                                            if(marked > 0){
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    App.instance.interactor.setMarkedStateById(id, marked)
+                                                }
+                                                holder.actionBtn.setImageResource(R.drawable.star_rate_icon)
+                                                holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.water))
+                                            }
+                                        })
+                                        dialog.dismiss()
+                                    }
+                                    else -> {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            App.instance.interactor.removeNotificationById(
+                                                DetailsActivity.notificationId
+                                            )
+                                        }
+                                        holder.actionBtn.setImageResource(R.drawable.star_outline_icon)
+                                        holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.water))
+                                    }
+                                }
+                            }
                     }
-
-                    if(marked < 0 ) {
-                        Utils.showSettingsDialog(context)
-                        dialog.dismiss()
-                    }
-
                 }
                 .setNegativeButton(context.getString(R.string.no)){ dialog, _ ->
                     dialog.dismiss()
