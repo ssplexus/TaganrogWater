@@ -125,4 +125,6 @@ class MainRepository(private val notificationDao: NotificationDao) {
     fun getRowCount() = notificationDao.getSize()
 
     fun checkNotificationId(id: Int) = notificationDao.checkId(id)
+
+    fun getCachedData() = notificationDao.getCachedData()
 }

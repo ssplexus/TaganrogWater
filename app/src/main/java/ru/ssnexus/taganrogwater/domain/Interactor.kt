@@ -49,6 +49,8 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
 
     fun getNotificationCachedList() = notificationCachedList
 
+    fun getNotificationsListFromDB() = repo.getCachedData()
+
     fun getNotificationLiveData() = notificationLiveData
 
     fun updateMarkedStateById(id: Int){

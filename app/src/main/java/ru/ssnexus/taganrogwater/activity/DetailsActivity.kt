@@ -141,8 +141,7 @@ class DetailsActivity : AppCompatActivity() {
                                                                     notificationId, notificationMarked)
                                                             }
 
-                                                            val period = 10000L
-                                                                //notificationMarked * 60 * 60 * 1000
+                                                            val period = notificationMarked * 60 * 60 * 1000L
                                                             NotificationHelper.createNotificationAlarm(App.instance.applicationContext,
                                                                 notificationId,
                                                                 binding.notifDate.text as String,

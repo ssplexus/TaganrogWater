@@ -18,8 +18,8 @@ object AppConstants {
     const val ACTION_CHECKDATA = "CheckData"
     const val ACTION_NOTIF_PREFIX = "Notif_"
 
-//    const val CHECKDATA_PERIOD : Long = 60000 * 5
-    const val CHECKDATA_PERIOD : Long = 10000
+    const val CHECKDATA_PERIOD : Long = 60000 * 5
+//    const val CHECKDATA_PERIOD : Long = 10000
 
 
 

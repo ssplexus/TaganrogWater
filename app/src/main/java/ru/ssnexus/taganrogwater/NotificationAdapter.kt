@@ -91,8 +91,7 @@ class NotificationAdapter(private val context: Context, private var notification
                                                 }
                                                 holder.actionBtn.setImageResource(R.drawable.star_rate_icon)
                                                 holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.water))
-                                                val period = 10000L
-                                                //marked * 60 * 60 * 1000
+                                                val period = marked * 60 * 60 * 1000L
                                                 NotificationHelper.createNotificationAlarm(App.instance.applicationContext,
                                                     notificationsData[position].id,
                                                     holder.date.text as String,

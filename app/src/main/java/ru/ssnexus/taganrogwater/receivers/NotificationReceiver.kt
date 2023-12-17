@@ -6,6 +6,9 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
@@ -22,38 +25,33 @@ class NotificationReceiver: BroadcastReceiver() {
         if (intent.action == "android.intent.action.BOOT_COMPLETED"){
             if(App.instance.interactor.getCheckDataPref())
             {
-//                NotificationHelper.enableCheckDataAlarm(App.instance.applicationContext)
 //                NotificationHelper.createNotification(App.instance.applicationContext,
 //                    Random().nextInt(1000),"01.01.2024", "Alarm Created")
                 NotificationHelper.createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
 
-                if(App.instance.interactor.getNotificationCachedList().isEmpty()){
-                    NotificationHelper.createNotification(App.instance.applicationContext,
-                        Random().nextInt(1000),"01.01.2024", "Alarm Created")
+                CoroutineScope(Dispatchers.IO).launch {
+
+                        App.instance.interactor.getNotificationsListFromDB().forEach {
+                        if(it.marked > 0) {
+                            var dateFromNotif:String = ""
+                            val formatter = SimpleDateFormat("dd.MM.yyyy")
+                            try{
+                                dateFromNotif = formatter.format(it.date)
+                            } catch (e: ParseException){
+                                e.printStackTrace()
+                            }
+                            val period = it.marked * 60 * 60 * 1000L
+                            NotificationHelper.createNotificationAlarm(App.instance.applicationContext,
+                                it.id, dateFromNotif, it.notifiction, period)
+                        }
+                    }
                 }
-//                App.instance.interactor.getNotificationCachedList().forEach {
-//                    if(it.marked > 0) {
-//                        var dateFromNotif:String = ""
-//                        val formatter = SimpleDateFormat("dd.MM.yyyy")
-//                        try{
-//                            dateFromNotif = formatter.format(it.date)
-//                        } catch (e: ParseException){
-//                            e.printStackTrace()
-//                        }
-//                        val period = 10000L
-//                        //it.marked * 60 * 60 * 1000
-//                        NotificationHelper.createNotificationAlarm(App.instance.applicationContext,
-//                            it.id, dateFromNotif, it.notifiction, period)
-//                    }
-//                }
             }
         }
         if (intent.action == AppConstants.ACTION_CHECKDATA){
-//            Timber.d("Receive check data!!!")
                 App.instance.interactor.getData()
-//            NotificationHelper.createNotification(App.instance.applicationContext,
-//                Random().nextInt(1000),"01.01.2001", "XXX")
         }
+
         if(intent.action?.contains(AppConstants.ACTION_NOTIF_PREFIX) == true){
             val extras = intent.extras
             if(extras != null)
