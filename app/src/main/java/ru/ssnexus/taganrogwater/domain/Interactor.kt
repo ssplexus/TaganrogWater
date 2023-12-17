@@ -87,6 +87,7 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
 //            notifications.add("19.12.23 ssd ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")
 //            notifications.add("12.12.23 ssd ewtttttttt ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")//            notifications.add("07.11.23 drrrrhhjjkk")
 //            notifications.add("07.11.23 addddddsdfgarghasehtd")
+//            notifications.add("04.11.23 addddddsdfgarghasehtd")
 
 //            repo.clearData()
             if (!notifications.isEmpty()) repo.putToDb(notifications)

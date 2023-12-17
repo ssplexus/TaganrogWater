@@ -146,6 +146,12 @@ class MainActivity : AppCompatActivity() {
         if(App.instance.interactor.getFirstLaunch())
         {
             NotificationHelper.setEnableReceiver(App.instance.applicationContext, true )
+
+            if(App.instance.interactor.getCheckDataPref()){
+                if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
+                    createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
+            }
+
             App.instance.interactor.setFirstLaunch(false)
 
             val builder = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Center)
@@ -157,11 +163,6 @@ class MainActivity : AppCompatActivity() {
             val customDialog = builder.create()
             customDialog.show()
             customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
-        }
-
-        if(App.instance.interactor.getCheckDataPref()){
-            if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
-                createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
         }
 
 //        progressDialog.setOnDismissListener {  }

@@ -15,9 +15,14 @@ import kotlinx.coroutines.*
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
+import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.ActivityDetailsBinding
+import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.Utils
 import timber.log.Timber
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailsBinding
@@ -26,7 +31,7 @@ class DetailsActivity : AppCompatActivity() {
     companion object {
         var notificationId: Int = 0
         var notificationMarked: Int = -1
-        var notificationDate: String = ""
+        var notificationDate: Long = 0
         var notificationBody: String = ""
     }
 
@@ -36,6 +41,8 @@ class DetailsActivity : AppCompatActivity() {
         binding = ActivityDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        var strDate: String = ""
+        val formatter = SimpleDateFormat("dd.MM.yy")
         if(savedInstanceState == null)
         {
             Timber.d("savedInstanceState")
@@ -44,12 +51,27 @@ class DetailsActivity : AppCompatActivity() {
             {
                 Timber.d("Extras!!!")
                 notificationId = extras.getInt(AppConstants.ID_EXTRA)
-                notificationDate = extras.getString(AppConstants.TITLE_EXTRA,"")
+                strDate = extras.getString(AppConstants.TITLE_EXTRA,"")
+
+                try {
+                    val date = formatter.parse(strDate) as Date
+                    notificationDate = date.time
+                } catch (e:ParseException){
+                    e.printStackTrace()
+                }
                 notificationBody = extras.getString(AppConstants.MESSAGE_EXTRA, "")
             }
         }
 
-        binding.notifDate.text = notificationDate
+        if(strDate.isEmpty()){
+            try{
+                strDate = formatter.format(notificationDate)
+            } catch (e: ParseException){
+                e.printStackTrace()
+            }
+        }
+
+        binding.notifDate.text = strDate
         binding.notifBody.text = notificationBody
         binding.notifBody.movementMethod = ScrollingMovementMethod()
 
@@ -60,34 +82,6 @@ class DetailsActivity : AppCompatActivity() {
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-//        runBlocking {
-//            val job: Job = launch(context = Dispatchers.Default) {
-//                Timber.d("getMarkedStateById = " + App.instance.interactor.getMarkedStateById(10000))
-//            }
-//        }
-
-//        App.instance.interactor.getNotificationLiveData().observe(this@DetailsActivity){
-//            var marked: Int = -2
-//            runBlocking {
-//                val job: Job = launch(context = Dispatchers.Default) {
-//                    marked = App.instance.interactor.getMarkedStateById(notificationId)
-//                }
-//                job.join()
-//
-//                if(marked != notificationMarked && marked != -2){
-//                    this@DetailsActivity.menu?.let {
-//                        notificationMarked = marked
-//                        when (notificationMarked){
-//                            -1 -> it.getItem(0).icon = resources.getDrawable(R.drawable.star_outline_icon, theme)
-//                             0 -> it.getItem(0).icon = resources.getDrawable(R.drawable.delete_icon, theme)
-//                             1 -> it.getItem(0).icon = resources.getDrawable(R.drawable.star_rate_icon, theme)
-//                        }
-//                        it.getItem(0).icon.setColorFilter(resources.getColor(R.color.white) , PorterDuff.Mode.SRC_ATOP)
-//                    }
-//                }
-//            }
-//        }(1..24)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -146,15 +140,24 @@ class DetailsActivity : AppCompatActivity() {
                                                                 App.instance.interactor.setMarkedStateById(
                                                                     notificationId, notificationMarked)
                                                             }
+
+                                                            val period = 10000L
+                                                                //notificationMarked * 60 * 60 * 1000
+                                                            NotificationHelper.createNotificationAlarm(App.instance.applicationContext,
+                                                                notificationId,
+                                                                binding.notifDate.text as String,
+                                                                notificationBody,
+                                                                period)
                                                         }
                                                      })
                                                     dialog.dismiss()
                                          }
                                         else -> {
                                             CoroutineScope(Dispatchers.IO).launch {
-                                                App.instance.interactor.removeNotificationById(
-                                                    notificationId)
+                                                App.instance.interactor.setMarkedStateById(
+                                                    notificationId, -1)
                                             }
+                                            NotificationHelper.cancelNotificationAlarm(App.instance.applicationContext, notificationId)
                                             menu.getItem(0).icon = resources.getDrawable(R.drawable.star_outline_icon, theme)
                                             menu.getItem(0).icon.setColorFilter(resources.getColor(R.color.white) , PorterDuff.Mode.SRC_ATOP)
                                         }

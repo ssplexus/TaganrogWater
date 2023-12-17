@@ -15,6 +15,7 @@ import kotlinx.coroutines.*
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.WaterInfoViewBinding
+import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.Utils
 import timber.log.Timber
 import java.text.ParseException
@@ -37,8 +38,17 @@ class NotificationAdapter(private val context: Context, private var notification
 
     @SuppressLint("SimpleDateFormat")
     override fun onBindViewHolder(holder: NotificationAdapter.NotificationHolder, position: Int) {
-        val id: Int = notificationsData[position].id
         var marked = notificationsData[position].marked
+        val formatter = SimpleDateFormat("dd.MM.yyyy")
+        try{
+            val dateFromNotif = formatter.format(notificationsData[position].date)
+            holder.date.text = dateFromNotif
+        } catch (e: ParseException){
+            e.printStackTrace()
+        }
+
+        holder.notification.text = notificationsData[position].notifiction
+
         when (marked){
             -1 -> {
                 holder.actionBtn.setImageResource(R.drawable.star_outline_icon)
@@ -67,7 +77,7 @@ class NotificationAdapter(private val context: Context, private var notification
                     when(marked) {
                         0 ->{
                             CoroutineScope(Dispatchers.IO).launch {
-                                App.instance.interactor.removeNotificationById(id)
+                                App.instance.interactor.removeNotificationById(notificationsData[position].id)
                             }
                         }
                         else->{
@@ -77,20 +87,27 @@ class NotificationAdapter(private val context: Context, private var notification
                                             marked = DetailsActivity.notificationMarked
                                             if(marked > 0){
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    App.instance.interactor.setMarkedStateById(id, marked)
+                                                    App.instance.interactor.setMarkedStateById(notificationsData[position].id, marked)
                                                 }
                                                 holder.actionBtn.setImageResource(R.drawable.star_rate_icon)
                                                 holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.water))
+                                                val period = 10000L
+                                                //marked * 60 * 60 * 1000
+                                                NotificationHelper.createNotificationAlarm(App.instance.applicationContext,
+                                                    notificationsData[position].id,
+                                                    holder.date.text as String,
+                                                    notificationsData[position].notifiction,
+                                                    period)
                                             }
                                         })
                                         dialog.dismiss()
                                     }
                                     else -> {
                                         CoroutineScope(Dispatchers.IO).launch {
-                                            App.instance.interactor.removeNotificationById(
-                                                DetailsActivity.notificationId
-                                            )
+                                            App.instance.interactor.setMarkedStateById(
+                                                notificationsData[position].id, -1)
                                         }
+                                        NotificationHelper.cancelNotificationAlarm(App.instance.applicationContext, notificationsData[position].id)
                                         holder.actionBtn.setImageResource(R.drawable.star_outline_icon)
                                         holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.water))
                                     }
@@ -107,22 +124,13 @@ class NotificationAdapter(private val context: Context, private var notification
             customDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.resources.getColor(R.color.dark_water))
         }
 
-        val formatter = SimpleDateFormat("dd.MM.yyyy")
-        try{
-            val dateFromNotif = formatter.format(notificationsData[position].date)
-            holder.date.text = dateFromNotif
-        } catch (e: ParseException){
-            e.printStackTrace()
-        }
 
-
-        holder.notification.text = notificationsData[position].notifiction
 
 //        holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
         holder.itemContainer.setOnClickListener {
-            DetailsActivity.notificationId = id
+            DetailsActivity.notificationId = notificationsData[position].id
             DetailsActivity.notificationMarked = marked
-            DetailsActivity.notificationDate = holder.date.text as String
+            DetailsActivity.notificationDate = notificationsData[position].date
             DetailsActivity.notificationBody = holder.notification.text as String
             val activity = holder.itemView.context as Activity
             activity.startActivity(Intent(activity, DetailsActivity::class.java))

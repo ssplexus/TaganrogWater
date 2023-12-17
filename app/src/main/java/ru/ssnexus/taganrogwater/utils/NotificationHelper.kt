@@ -19,6 +19,7 @@ import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import ru.ssnexus.taganrogwater.activity.MainActivity
+import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -112,6 +113,46 @@ object NotificationHelper {
             period,
             alarmIntent
         )
+    }
+
+
+    @SuppressLint("UnspecifiedImmutableFlag")
+    fun createNotificationAlarm(context: Context, id: Int, date: String, notification: String, period: Long){
+        Timber.d("createCheckDataAlarm!!!")
+        //Получаем доступ к AlarmManager
+        val alarmManager =
+            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+
+        val alarmIntent:PendingIntent
+                = Intent(context, NotificationReceiver::class.java).let { intent ->
+            intent.action = AppConstants.ACTION_NOTIF_PREFIX + id.toString()
+
+            intent.putExtra(AppConstants.ID_EXTRA, id)
+            intent.putExtra(AppConstants.TITLE_EXTRA, date)
+            intent.putExtra(AppConstants.MESSAGE_EXTRA, notification)
+
+            PendingIntent.getBroadcast(context,
+                0,
+                intent,
+                0)
+        }
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            System.currentTimeMillis() + period,
+            period,
+            alarmIntent
+        )
+    }
+
+    fun cancelNotificationAlarm(context: Context, id: Int){
+        Timber.d("cancelCheckDataAlarm!!!")
+        val alarmManager =
+            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, NotificationReceiver::class.java)
+        intent.action = id.toString()
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        alarmManager.cancel(pendingIntent)
     }
 
     fun cancelCheckDataAlarm(context: Context){

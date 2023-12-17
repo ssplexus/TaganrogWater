@@ -22,7 +22,9 @@ class MainRepository(private val notificationDao: NotificationDao) {
         val notificationsCached = notificationDao.getCachedData() as ArrayList<NotificationsData>
         val cacheSize = notificationsCached.size
         var newId = cacheSize
+        val incomingNotificationsList = ArrayList<NotificationsData>()
         val newNotificationsList = ArrayList<NotificationsData>()
+        val archNotificationsList = notificationsCached.toMutableList()
 
         list.forEach {
                 val srcText = it.trim()
@@ -43,19 +45,7 @@ class MainRepository(private val notificationDao: NotificationDao) {
 
                             val notification = words.joinToString(" ")
                             val date = formatter.parse(dateStr) as Date
-
-                            val iterator = notificationsCached.iterator()
-                            while (iterator.hasNext()){
-                                val notifItem = iterator.next()
-                                if(date.time == notifItem.date && notification == notifItem.notifiction){
-                                    ignore = true
-                                    iterator.remove()
-                                    continue
-                                }
-                            }
-
-                            if (!ignore)
-                                newNotificationsList.add(NotificationsData(id = newId++, date = date.time, notifiction = notification))
+                            incomingNotificationsList.add(NotificationsData(id = newId++, date = date.time, notifiction = notification))
                         }
                     } catch (e:ParseException){
                         e.printStackTrace()
@@ -63,14 +53,33 @@ class MainRepository(private val notificationDao: NotificationDao) {
                 }
         }
 
-        val iterator = notificationsCached.iterator()
-        while (iterator.hasNext()) {
-            iterator.next().marked = 0
+
+        incomingNotificationsList.forEach { newNotif ->
+            var newFlag = true
+            notificationsCached.forEach { cachedNotif ->
+                if(cachedNotif.equals(newNotif)) {
+                    archNotificationsList.remove(cachedNotif)
+                    newFlag = false
+                    return@forEach
+                }
+            }
+            if(newFlag) newNotificationsList.add(newNotif)
         }
+
+        if(!archNotificationsList.isEmpty()){
+//            val iterator = archNotificationsList.listIterator()
+//            while (iterator.hasNext()) iterator.next().marked = 0
+            archNotificationsList.forEachIndexed { index, _ ->
+                archNotificationsList[index].marked = 0
+                NotificationHelper.cancelNotificationAlarm(App.instance.applicationContext,archNotificationsList[index].id)
+            }
+        }
+
 
         if(cacheSize != 0) {
             val formatter = SimpleDateFormat("dd.MM.yyyy")
             newNotificationsList.forEach {
+                Timber.d("newNotificationsList" + it.id + " " + it.date + " " + it.notifiction)
                 try {
                     val dateFromNotif = formatter.format(it.date)
                     NotificationHelper.createNotification(
