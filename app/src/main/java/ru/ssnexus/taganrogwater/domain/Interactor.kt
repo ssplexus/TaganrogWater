@@ -5,8 +5,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.Glide.init
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +22,7 @@ import ru.ssnexus.taganrogwater.data.MainRepository
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.preferences.PreferencesProvider
 import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
+import ru.ssnexus.taganrogwater.utils.SingleLiveEvent
 import ru.ssnexus.taganrogwater.utils.addTo
 import timber.log.Timber
 import java.net.URL
@@ -28,6 +31,7 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
 
     private val notificationCachedList = ArrayList<NotificationsData>()
     private var notificationLiveData =  MutableLiveData <List<NotificationsData>>()
+    private val checkDataResult = SingleLiveEvent<Boolean>()
     init {
 
     }
@@ -37,13 +41,16 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
             .observeOn(AndroidSchedulers.mainThread())
                 .doOnError {
                     Timber.d("ERROR : NotificationsDataObservable Error!")
+                    notificationCachedList.clear()
+                    val emptyList = ArrayList<NotificationsData>()
+                    notificationLiveData.postValue(emptyList)
                 }.subscribe{
-                if(!it.isEmpty()) {
+//                if(!it.isEmpty()) {
                     Timber.d("notificationLiveData.postValue(it)")
                     notificationCachedList.clear()
                     notificationCachedList.addAll(it)
                     notificationLiveData.postValue(it)
-                }
+//                }
             }.addTo(main.autoDisposable)
     }
 
@@ -52,6 +59,8 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     fun getNotificationsListFromDB() = repo.getCachedData()
 
     fun getNotificationLiveData() = notificationLiveData
+
+    fun getCheckDataResultLiveData() = checkDataResult
 
     fun updateMarkedStateById(id: Int){
         repo.updateMarkedStateById(id)
@@ -71,28 +80,30 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getData(){
-        // Create a new coroutine scope
-        val scope = CoroutineScope(Dispatchers.Default)
-        // Launch a new coroutine in the scope
-        scope.launch {
-            val url = URL(AppConstants.DATA_URL)
-            val doc: Document = Jsoup.connect(url.toString()).get()
-            var element = doc.select("table").get(1)
-            val rows = element.select("tr")
-            var notifications = ArrayList<String>()
+        if(App.instance.interactor.getCheckDataPref()){
+            // Create a new coroutine scope
+            val scope = CoroutineScope(Dispatchers.Default)
+            // Launch a new coroutine in the scope
+            scope.launch {
+                val url = URL(AppConstants.DATA_URL)
+                try{
+                    val doc: Document = Jsoup.connect(url.toString()).get()
+                    var element = doc.select("table").get(1)
+                    val rows = element.select("tr")
+                    var notifications = ArrayList<String>()
 
-            rows.forEach{row ->
-                notifications.add(row.text())
+                    rows.forEach{row ->
+                        notifications.add(row.text())
+                    }
+                    notifications.removeLast()
+
+                    if (!notifications.isEmpty()) repo.putToDb(notifications)
+                    checkDataResult.postValue(true)
+                }catch (e: Exception){
+                    Timber.d(e.printStackTrace().toString())
+                    checkDataResult.postValue(false)
+                }
             }
-            notifications.removeLast()
-
-//            notifications.add("19.12.23 ssd ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")
-//            notifications.add("12.12.23 ssd ewtttttttt ddfgsadaasdddddddddddddddddddddddddsssssssssss      sssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaag fgsthbwsrhfnfjhj")//            notifications.add("07.11.23 drrrrhhjjkk")
-//            notifications.add("07.11.23 addddddsdfgarghasehtd")
-//            notifications.add("04.11.23 addddddsdfgarghasehtd")
-
-//            repo.clearData()
-            if (!notifications.isEmpty()) repo.putToDb(notifications)
         }
     }
 
@@ -117,6 +128,10 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     fun removeArchive(){
         repo.removeArchiveData()
     }
+
+    fun unmarkAllNotifications() = repo.unmarkAllNotifications()
+
+    fun getMarkedNotifications() = repo.getMarkedNotifications()
 
     fun clearCachedData() {
         repo.clearData()

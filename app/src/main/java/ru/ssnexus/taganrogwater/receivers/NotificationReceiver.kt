@@ -25,8 +25,8 @@ class NotificationReceiver: BroadcastReceiver() {
         if (intent.action == "android.intent.action.BOOT_COMPLETED"){
             if(App.instance.interactor.getCheckDataPref())
             {
-//                NotificationHelper.createNotification(App.instance.applicationContext,
-//                    Random().nextInt(1000),"01.01.2024", "Alarm Created")
+                //NotificationHelper.createNotification(App.instance.applicationContext,
+                  //  Random().nextInt(1000),"01.01.2024", "Alarm Created")
                 NotificationHelper.createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
 
                 CoroutineScope(Dispatchers.IO).launch {
@@ -49,6 +49,9 @@ class NotificationReceiver: BroadcastReceiver() {
             }
         }
         if (intent.action == AppConstants.ACTION_CHECKDATA){
+            Timber.d("Check data!!!")
+            //NotificationHelper.createNotification(App.instance.applicationContext,
+              //  1000 + Random().nextInt(1000),"Check data", "Get data!!!")
                 App.instance.interactor.getData()
         }
 

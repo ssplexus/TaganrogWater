@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Vasyutchenko Alexey  2023. Last modified 19.11.2023, 10:02
+ * ss.plexus@gmail.com
+ */
+
 package ru.ssnexus.taganrogwater.activity
 
 import android.app.ProgressDialog

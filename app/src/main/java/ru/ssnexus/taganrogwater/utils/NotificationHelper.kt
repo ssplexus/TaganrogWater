@@ -15,6 +15,7 @@ import android.media.AudioManager
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.google.android.gms.common.wrappers.Wrappers.packageManager
+import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
@@ -30,35 +31,36 @@ object NotificationHelper {
 
     fun createNotification(context: Context, id: Int, date: String, notif: String){
         Timber.d("createNotification!!!")
-        val title = date
-        val message = notif//.take(256)
+        if(App.instance.interactor.getShowNotifPref()){
+            val title = date
+            val message = notif//.take(256)
 
-        val mIntent = Intent(context, DetailsActivity::class.java)
-        mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        mIntent.putExtra(AppConstants.ID_EXTRA, id)
-        mIntent.putExtra(AppConstants.TITLE_EXTRA, title)
-        mIntent.putExtra(AppConstants.MESSAGE_EXTRA, message)
+            val mIntent = Intent(context, DetailsActivity::class.java)
+            mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            mIntent.putExtra(AppConstants.ID_EXTRA, id)
+            mIntent.putExtra(AppConstants.TITLE_EXTRA, title)
+            mIntent.putExtra(AppConstants.MESSAGE_EXTRA, message)
 
-        val pendingIntent =
-            PendingIntent.getActivity(context, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent =
+                PendingIntent.getActivity(context, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val notification = NotificationCompat.Builder(context, AppConstants.CHANNEL_ID)
-            .setLargeIcon(BitmapFactory.decodeResource(context.resources,
-                R.drawable.splash_screen))
-            .setSmallIcon(R.drawable.water_drop_icon)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setColor(context.resources.getColor(R.color.dark_water))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText(message))
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .build()
+            val notification = NotificationCompat.Builder(context, AppConstants.CHANNEL_ID)
+                .setLargeIcon(BitmapFactory.decodeResource(context.resources,
+                    R.drawable.splash_screen))
+                .setSmallIcon(R.drawable.water_drop_icon)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setColor(context.resources.getColor(R.color.dark_water))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setStyle(NotificationCompat.BigTextStyle()
+                    .bigText(message))
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .build()
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        notificationManager.notify(id, notification)
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(id, notification)
+        }
     }
 
     fun createNotificationEvent(context: Context, dateTimeInMillis: Long, date: String, notif: String){
@@ -150,7 +152,7 @@ object NotificationHelper {
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
-        intent.action = id.toString()
+        intent.action = AppConstants.ACTION_NOTIF_PREFIX + id.toString()
         val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
         alarmManager.cancel(pendingIntent)
     }

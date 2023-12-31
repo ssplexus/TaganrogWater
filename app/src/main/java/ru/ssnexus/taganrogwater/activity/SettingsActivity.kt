@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Vasyutchenko Alexey  2023. Last modified 10.12.2023, 19:55
+ * ss.plexus@gmail.com
+ */
+
 package ru.ssnexus.taganrogwater.activity
 
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +18,7 @@ import kotlinx.coroutines.launch
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
+import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.ActivitySettingsBinding
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.NotificationHelper.cancelCheckDataAlarm
@@ -57,6 +63,31 @@ class SettingsActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.yes)){ _, _ ->
                     CoroutineScope(Dispatchers.IO).launch {
                         App.instance.interactor.removeArchive()
+                    }
+                }
+                .setNegativeButton(getString(R.string.no)){ dialog, _ ->
+                    dialog.dismiss()
+                }
+            val customDialog = builder.create()
+            customDialog.show()
+            customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
+            customDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(R.color.dark_water))
+        }
+
+        binding.clearNotifications.setOnClickListener {
+            val builder = MaterialAlertDialogBuilder(this)
+            builder.setTitle(getString(R.string.notifs_delete))
+                .setMessage(getString(R.string.do_you_want_to_delete_notifs))
+                .setPositiveButton(getString(R.string.yes)){ _, _ ->
+                    var markedList = ArrayList<NotificationsData>()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        markedList = App.instance.interactor.getMarkedNotifications() as ArrayList<NotificationsData>
+                        App.instance.interactor.unmarkAllNotifications()
+                        markedList.forEach {
+                            NotificationHelper.cancelNotificationAlarm(App.instance.applicationContext,
+                                it.id
+                            )
+                        }
                     }
                 }
                 .setNegativeButton(getString(R.string.no)){ dialog, _ ->

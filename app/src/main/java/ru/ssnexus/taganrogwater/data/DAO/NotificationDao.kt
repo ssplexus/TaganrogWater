@@ -32,6 +32,14 @@ interface NotificationDao {
     @Query("SELECT marked FROM cached_data WHERE id = :id")
     fun getMarkedStateById(id : Int): Int
 
+    // Снять все пометки
+    @Query("UPDATE cached_data SET marked = -1")
+    fun unmarkAll()
+
+    @Query("SELECT * FROM cached_data WHERE marked > -1")
+    fun getMarked(): List<NotificationsData>
+
+
     // Очистка таблицы
     @Query("DELETE FROM cached_data")
     fun nukeData()

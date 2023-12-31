@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Vasyutchenko Alexey  2023. Last modified 17.12.2023, 22:45
+ * ss.plexus@gmail.com
+ */
+
 package ru.ssnexus.taganrogwater.activity
 
 import android.content.DialogInterface
@@ -42,7 +47,7 @@ class DetailsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         var strDate: String = ""
-        val formatter = SimpleDateFormat("dd.MM.yy")
+        val formatter = SimpleDateFormat("dd.MM.yyyy")
         if(savedInstanceState == null)
         {
             Timber.d("savedInstanceState")
@@ -59,6 +64,13 @@ class DetailsActivity : AppCompatActivity() {
                 } catch (e:ParseException){
                     e.printStackTrace()
                 }
+                runBlocking {
+                    val job: Job = launch(context = Dispatchers.Default) {
+                        notificationMarked = App.instance.interactor.getMarkedStateById(notificationId)
+                    }
+                    job.join()
+                }
+
                 notificationBody = extras.getString(AppConstants.MESSAGE_EXTRA, "")
             }
         }

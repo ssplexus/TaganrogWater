@@ -24,6 +24,9 @@
     <string name="do_you_want_to_delete_archive">Вы уверены, что хотите удалить архив?</string>
     <string name="archive_delete">Удаление архива</string>
 
+    <string name="do_you_want_to_delete_notifs">Вы уверены, что хотите удалить напоминания?</string>
+    <string name="notifs_delete">Удаление напоминаний</string>
+
     <string name="about">О программе</string>
 
     <string name="tagWaterlink">Информация с <a href="http://www.tgnvoda.ru/avarii.php">сайта</a>\nМуниципальное унитарное предприятие\n&quot;Управление Водоканал&quot;\nг. Таганрог</string>
@@ -31,7 +34,10 @@
     <string name="chack_new_data">Актуализировать данные</string>
     <string name="show_notifications">Показывать уведомления</string>
     <string name="show_archive">Отображать архив</string>
-    <string name="clear_notifications">Удалить напоминания</string>
+    <string name="clear_notifications">Удалить\nнапоминания</string>
+    <string name="about_info">Данная программа предназначена для предоставления оперативной информации с официального <a href="http://www.tgnvoda.ru/avarii.php">сайта</a> Таганрогского МУП "УПРАВЛЕНИЕ "ВОДОКАНАЛ". \n\nОсновной функционал программы - опрос сайта Таганрогского водоканала с определённой периодичностью и оповещение пользователя о произошедших изменениях</string>
+    <string name="no_internet_connection">Нет интернет соединения</string>
+    <string name="get_data_failed">Не удалось получить данные с сайта!Возможно сайт недоступен</string>
 
     <string-array name="periods">
         <item>12 часов</item>

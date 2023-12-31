@@ -110,6 +110,10 @@ class MainRepository(private val notificationDao: NotificationDao) {
 
     fun getMarkedStateById(id: Int) = notificationDao.getMarkedStateById(id)
 
+    fun unmarkAllNotifications() = notificationDao.unmarkAll()
+
+    fun getMarkedNotifications() = notificationDao.getMarked()
+
     fun removeNotificationById(id: Int){
         notificationDao.removeNotificationById(id)
     }

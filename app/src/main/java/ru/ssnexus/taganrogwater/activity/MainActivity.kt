@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Vasyutchenko Alexey  2023. Last modified 31.12.2023, 12:42
+ * ss.plexus@gmail.com
+ */
+
 package ru.ssnexus.taganrogwater.activity
 
 import android.app.ProgressDialog
@@ -34,6 +39,10 @@ import timber.log.Timber
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        var firstStartActivity: Boolean = true
+    }
 
     private val viewModel by lazy {
         ViewModelProvider.NewInstanceFactory().create(MainViewModel::class.java)
@@ -108,15 +117,33 @@ class MainActivity : AppCompatActivity() {
         notificationAdapter = NotificationAdapter(this@MainActivity, ArrayList())
         binding.operInfoRV.adapter = notificationAdapter
 
-        if(Utils.checkConnection(this))
-            App.instance.interactor.getData()
-        else
-            Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_SHORT).show()
-
         App.instance.interactor.getNotificationLiveData().observe(this){
-            Timber.d("notificationAdapter.updateNotificationsList(it)")
+//            Timber.d("notificationAdapter.f(it)%s", it.toString())
+            if(!Utils.checkConnection(this)) Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
+            if(it.isEmpty()) App.instance.interactor.getData()
+            else if(progressDialog.isShowing) progressDialog.dismiss()
             notificationAdapter.updateNotificationsList(it)
-            if(progressDialog.isShowing) progressDialog.dismiss()
+        }
+
+        App.instance.interactor.getCheckDataResultLiveData().observe(this){
+//            Timber.d("getCheckDataResultLiveData%s", it)
+            if(!Utils.checkConnection(this)) Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
+            else
+                if(!it) Toast.makeText(this, getString(R.string.get_data_failed), Toast.LENGTH_LONG).show()
+//            if(!firstStartActivity) {
+//                Timber.d("!firstStartActivity" )
+//                if (progressDialog.isShowing) progressDialog.dismiss()
+//                val builder = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Center)
+//                builder.setTitle("Предупреждение")
+//                    .setMessage("Не удалось получить данные с сайта!\nВозможно сайт недоступен")
+//                    .setPositiveButton(getString(R.string.ok)){ dialog, _ ->
+//                        dialog.dismiss()
+//                    }
+//                val customDialog = builder.create()
+//                customDialog.show()
+//                customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
+//            }
+//            firstStartActivity = false
         }
 
         binding.navView.setNavigationItemSelectedListener {
@@ -130,7 +157,10 @@ class MainActivity : AppCompatActivity() {
                     onBackPressed()
                     startActivity(Intent(this@MainActivity, ContactsActivity::class.java))
                 }
-                R.id.about -> Toast.makeText(baseContext, "About", Toast.LENGTH_SHORT).show()
+                R.id.about -> {
+                    onBackPressed()
+                    startActivity(Intent(this@MainActivity, AboutActivity::class.java))
+                }
                 R.id.exit -> {
                     closeApp()
                 }
@@ -146,12 +176,6 @@ class MainActivity : AppCompatActivity() {
         if(App.instance.interactor.getFirstLaunch())
         {
             NotificationHelper.setEnableReceiver(App.instance.applicationContext, true )
-
-            if(App.instance.interactor.getCheckDataPref()){
-                if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
-                    createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
-            }
-
             App.instance.interactor.setFirstLaunch(false)
 
             val builder = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Center)
@@ -165,9 +189,9 @@ class MainActivity : AppCompatActivity() {
             customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
         }
 
-//        progressDialog.setOnDismissListener {  }
+        if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
+            createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
 
-//        NotificationHelper.createNotificationEvent(this, 5000, "01.02.2023", "XoXo")
     }
 
     override fun onBackPressed() {

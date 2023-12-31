@@ -123,8 +123,6 @@ class NotificationAdapter(private val context: Context, private var notification
             customDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.resources.getColor(R.color.dark_water))
         }
 
-
-
 //        holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
         holder.itemContainer.setOnClickListener {
             DetailsActivity.notificationId = notificationsData[position].id
@@ -144,15 +142,18 @@ class NotificationAdapter(private val context: Context, private var notification
     fun updateNotificationsList(_notificationList: List<NotificationsData>){
         Timber.d("updateNotificationsList")
         notificationsData = ArrayList()
-        notificationsData.addAll(_notificationList)
+        if(!_notificationList.isEmpty()){
+            notificationsData.addAll(_notificationList)
 
-        if(!App.instance.interactor.getShowArchivePref()){
-            val iterator = notificationsData.iterator()
-            while (iterator.hasNext()){
-                val item = iterator.next()
-                if(item.marked == 0) iterator.remove()
+            if(!App.instance.interactor.getShowArchivePref()){
+                val iterator = notificationsData.iterator()
+                while (iterator.hasNext()){
+                    val item = iterator.next()
+                    if(item.marked == 0) iterator.remove()
+                }
             }
         }
+
         notifyDataSetChanged()
     }
     fun updateRecyclerView(){
