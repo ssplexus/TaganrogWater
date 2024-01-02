@@ -40,10 +40,6 @@ import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        var firstStartActivity: Boolean = true
-    }
-
     private val viewModel by lazy {
         ViewModelProvider.NewInstanceFactory().create(MainViewModel::class.java)
     }
@@ -63,6 +59,7 @@ class MainActivity : AppCompatActivity() {
             Timber.plant(Timber.DebugTree())
         }
         autoDisposable.bindTo(this.lifecycle)
+        // Инициализация
         initLayout()
     }
 
@@ -71,7 +68,6 @@ class MainActivity : AppCompatActivity() {
         builder.setTitle(getString(R.string.exit))
             .setMessage(getString(R.string.do_you_want_to_exit))
             .setPositiveButton(getString(R.string.yes)){ _, _ ->
-//                exitProcess(1)
                 this@MainActivity.finish()
                 exitProcess(0)
             }
@@ -85,13 +81,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Создание меню
         menuInflater.inflate(R.menu.actions_menu, menu)
+        // Добавление активных ссылок в TextView
         val linkText = findViewById<TextView>(R.id.infoText)
         linkText.movementMethod = LinkMovementMethod.getInstance()
         return super.onCreateOptionsMenu(menu)
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+        // Добавление действия для кнопки в правом верхнем углу формы
         if (id == R.id.actionId){
             startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
             return true
@@ -106,46 +105,41 @@ class MainActivity : AppCompatActivity() {
         setTheme(R.style.Theme_TaganrogWater)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // Добавляем главное меню
         toggle = ActionBarDrawerToggle(this, binding.root, R.string.open, R.string.close)
         binding.root.addDrawerListener(toggle)
         toggle.syncState()
+        // Отображаем главное меню
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // Инициализация RView
         binding.operInfoRV.setHasFixedSize(true)
         binding.operInfoRV.setItemViewCacheSize(15)
         binding.operInfoRV.layoutManager = LinearLayoutManager(this@MainActivity)
         notificationAdapter = NotificationAdapter(this@MainActivity, ArrayList())
         binding.operInfoRV.adapter = notificationAdapter
 
+        // Наблюдение за данными в базе сообщений
         App.instance.interactor.getNotificationLiveData().observe(this){
 //            Timber.d("notificationAdapter.f(it)%s", it.toString())
+            // Проверка сети и оповещение пользователя
             if(!Utils.checkConnection(this)) Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
+            // Если это первый запуск приложения (или нет закешированных данных), то запускаем опрос данных на сайте
             if(it.isEmpty()) App.instance.interactor.getData()
             else if(progressDialog.isShowing) progressDialog.dismiss()
+            // Обновление RV
             notificationAdapter.updateNotificationsList(it)
         }
 
+        //Наблюдение за результатом опроса сайта и оповещение пользователя
         App.instance.interactor.getCheckDataResultLiveData().observe(this){
 //            Timber.d("getCheckDataResultLiveData%s", it)
             if(!Utils.checkConnection(this)) Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
             else
                 if(!it) Toast.makeText(this, getString(R.string.get_data_failed), Toast.LENGTH_LONG).show()
-//            if(!firstStartActivity) {
-//                Timber.d("!firstStartActivity" )
-//                if (progressDialog.isShowing) progressDialog.dismiss()
-//                val builder = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Center)
-//                builder.setTitle("Предупреждение")
-//                    .setMessage("Не удалось получить данные с сайта!\nВозможно сайт недоступен")
-//                    .setPositiveButton(getString(R.string.ok)){ dialog, _ ->
-//                        dialog.dismiss()
-//                    }
-//                val customDialog = builder.create()
-//                customDialog.show()
-//                customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
-//            }
-//            firstStartActivity = false
         }
 
+        // Добавление действий для главного меню
         binding.navView.setNavigationItemSelectedListener {
             when(it.itemId)
             {
@@ -167,14 +161,18 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
+        //Инициализация наблюдения за изиенением данных в БД
         App.instance.interactor.initDataObservable(this)
 
         progressDialog = ProgressDialog(this)
         progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
         progressDialog.show()
 
+        // Если программа запускается в первый раз
         if(App.instance.interactor.getFirstLaunch())
         {
+            // Активизируем приёмник
             NotificationHelper.setEnableReceiver(App.instance.applicationContext, true )
             App.instance.interactor.setFirstLaunch(false)
 
@@ -188,7 +186,7 @@ class MainActivity : AppCompatActivity() {
             customDialog.show()
             customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
         }
-
+        // Если будильник опроса не создан, то создаём
         if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
             createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
 

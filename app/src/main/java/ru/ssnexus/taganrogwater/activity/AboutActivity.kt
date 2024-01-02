@@ -7,6 +7,8 @@ package ru.ssnexus.taganrogwater.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.MenuItem
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityAboutBinding
@@ -20,6 +22,9 @@ class AboutActivity : AppCompatActivity() {
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = resources.getString(R.string.about)
+
+        binding.aboutBody.movementMethod = LinkMovementMethod.getInstance()
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

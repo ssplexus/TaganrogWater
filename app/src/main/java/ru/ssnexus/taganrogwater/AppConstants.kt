@@ -4,8 +4,8 @@ object AppConstants {
     const val VERSION = 1
     const val DB_VERSION = 3
     const val DB_NAME = "notifications_db"
-    //const val DATA_URL = "http://www.tgnvoda.ru/avarii.php"
-    const val DATA_URL = "http://192.168.0.14/tagan-water/avarii/avarii.php"
+    const val DATA_URL = "http://www.tgnvoda.ru/avarii.php"
+//    const val DATA_URL = "http://192.168.0.14/tagan-water/avarii/avarii.php"
     const val CONTACTS_URL = "http://www.tgnvoda.ru/kontakt.html"
 
     const val NOTIFICATION_ID = 1
