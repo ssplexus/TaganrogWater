@@ -10,10 +10,17 @@ import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
+
+    companion object{
+        var author_text = ""
+    }
+
     private lateinit var binding: ActivityAboutBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +31,7 @@ class AboutActivity : AppCompatActivity() {
         supportActionBar?.title = resources.getString(R.string.about)
 
         binding.aboutBody.movementMethod = LinkMovementMethod.getInstance()
-
+        binding.footer.text = author_text
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

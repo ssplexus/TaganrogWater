@@ -15,9 +15,9 @@
     <string name="do_you_want_to_set_mark">Вы хотите включить напоминание о событии?</string>
     <string name="do_you_want_to_remove_mark">Вы хотите убрать напоминание о событии?</string>
     <string name="do_you_want_to_remove_notification">Вы хотите удалить событие из архива?</string>
-    <string name="loading_please_wait">Загрузка, пожалуйста подождите...</string>
+    <string name="loading_please_wait">Загрузка данных, пожалуйста подождите…</string>
     <string name="no_connection">Нет связи</string>
-    <string name="first_launch_app">Добро пожаловать в приложение "Оперативная информация Таганрогского водоканала",\n
+    <string name="first_launch_app">Добро пожаловать в приложение «Оперативная информация Таганрогского водоканала»,\n
         служба обновления оперативной информации активирована
     </string>
 
@@ -35,9 +35,11 @@
     <string name="show_notifications">Показывать уведомления</string>
     <string name="show_archive">Отображать архив</string>
     <string name="clear_notifications">Удалить\nнапоминания</string>
-    <string name="about_info">Данная программа предназначена для предоставления оперативной информации с официального <a href="http://www.tgnvoda.ru/avarii.php">сайта</a> Таганрогского муниципального унитарного предприятия «УПРАВЛЕНИЕ «ВОДОКАНАЛ».</string>
+    <string name="about_info">Неофициальное приложение для предоставления оперативной информации с официального <a href="http://www.tgnvoda.ru/avarii.php">сайта</a> Таганрогского муниципального унитарного предприятия «УПРАВЛЕНИЕ «ВОДОКАНАЛ».</string>
     <string name="no_internet_connection">Нет интернет соединения</string>
     <string name="get_data_failed">Не удалось получить данные с сайта!Возможно сайт недоступен</string>
+    <string name="no_data">Нет данных для отображения</string>
+    <string name="author_str">© Vasyutchenko Alexey 2023</string>
 
     <string-array name="periods">
         <item>12 часов</item>

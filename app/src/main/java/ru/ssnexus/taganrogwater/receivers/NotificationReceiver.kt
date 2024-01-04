@@ -11,12 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
-import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import timber.log.Timber
 import java.text.ParseException
-import java.util.*
-import kotlin.random.Random.Default.nextInt
 
 
 class NotificationReceiver: BroadcastReceiver() {

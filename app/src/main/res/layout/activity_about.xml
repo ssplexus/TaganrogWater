@@ -49,11 +49,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/water"
-        android:text="© Vasyutchenko Alexey 2023\nss.plexus@gmail.com"
+        android:text="@string/author_str"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:layout_weight="0"/>
 

@@ -6,31 +6,22 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
-import android.content.Context.AUDIO_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.AudioManager
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
-import com.google.android.gms.common.wrappers.Wrappers.packageManager
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
-import ru.ssnexus.taganrogwater.activity.MainActivity
-import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 object NotificationHelper {
 
     fun createNotification(context: Context, id: Int, date: String, notif: String){
-        Timber.d("createNotification!!!")
+//        Timber.d("createNotification!!!")
         if(App.instance.interactor.getShowNotifPref()){
             val title = date
             val message = notif//.take(256)
@@ -96,7 +87,7 @@ object NotificationHelper {
 
     @SuppressLint("UnspecifiedImmutableFlag")
     fun createCheckDataAlarm(context: Context, period: Long){
-        Timber.d("createCheckDataAlarm!!!")
+//        Timber.d("createCheckDataAlarm!!!")
         //Получаем доступ к AlarmManager
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -120,7 +111,7 @@ object NotificationHelper {
 
     @SuppressLint("UnspecifiedImmutableFlag")
     fun createNotificationAlarm(context: Context, id: Int, date: String, notification: String, period: Long){
-        Timber.d("createCheckDataAlarm!!!")
+//        Timber.d("createCheckDataAlarm!!!")
         //Получаем доступ к AlarmManager
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -148,7 +139,7 @@ object NotificationHelper {
     }
 
     fun cancelNotificationAlarm(context: Context, id: Int){
-        Timber.d("cancelCheckDataAlarm!!!")
+//        Timber.d("cancelCheckDataAlarm!!!")
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
@@ -158,7 +149,7 @@ object NotificationHelper {
     }
 
     fun cancelCheckDataAlarm(context: Context){
-        Timber.d("cancelCheckDataAlarm!!!")
+//        Timber.d("cancelCheckDataAlarm!!!")
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)

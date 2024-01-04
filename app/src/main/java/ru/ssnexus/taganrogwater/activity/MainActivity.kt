@@ -6,14 +6,13 @@
 package ru.ssnexus.taganrogwater.activity
 
 import android.app.ProgressDialog
-import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -23,13 +22,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.BuildConfig
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.NotificationAdapter
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
-import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
 import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarm
@@ -59,6 +61,31 @@ class MainActivity : AppCompatActivity() {
             Timber.plant(Timber.DebugTree())
         }
         autoDisposable.bindTo(this.lifecycle)
+
+        //Пытаемся получить токен с помощью слушателя
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener(OnCompleteListener { task ->
+                //Если не удастся получить токен, то логируем причину и выходим из слушателя
+                if (!task.isSuccessful) {
+                    Timber.w("MainActivity Fetching FCM registration token failed" + task.exception);
+                    return@OnCompleteListener
+                }
+                //Если получилось, то логируем токен
+                Timber.i("MainActivity" + task.result!!)
+            })
+
+        AboutActivity.author_text = resources.getText(R.string.author_str).toString()
+        // Получение параметра из Remote Config
+        val mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+        val mFirebaseRemoteConfigSettings = FirebaseRemoteConfigSettings.Builder().build()
+        mFirebaseRemoteConfig.setConfigSettingsAsync(mFirebaseRemoteConfigSettings)
+        mFirebaseRemoteConfig.fetch(0).addOnCompleteListener(this) {task ->
+            if(task.isSuccessful)
+                mFirebaseRemoteConfig.activate()
+                val fbVal = mFirebaseRemoteConfig.getString("email_val")
+                AboutActivity.author_text += "\n" + fbVal
+        }
+
         // Инициализация
         initLayout()
     }
@@ -112,6 +139,11 @@ class MainActivity : AppCompatActivity() {
         // Отображаем главное меню
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        progressDialog = ProgressDialog(this)
+        progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
+        progressDialog.setCancelable(false)
+//        progressDialog.show()
+
         // Инициализация RView
         binding.operInfoRV.setHasFixedSize(true)
         binding.operInfoRV.setItemViewCacheSize(15)
@@ -122,23 +154,93 @@ class MainActivity : AppCompatActivity() {
         // Наблюдение за данными в базе сообщений
         App.instance.interactor.getNotificationLiveData().observe(this){
 //            Timber.d("notificationAdapter.f(it)%s", it.toString())
-            // Проверка сети и оповещение пользователя
-            if(!Utils.checkConnection(this)) Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
-            // Если это первый запуск приложения (или нет закешированных данных), то запускаем опрос данных на сайте
-            if(it.isEmpty()) App.instance.interactor.getData()
-            else if(progressDialog.isShowing) progressDialog.dismiss()
             // Обновление RV
+            if(!it.isEmpty()) {
+                binding.noDataView.visibility = View.GONE
+                binding.pullToRefresh.visibility = View.VISIBLE
+                binding.operInfoRV.visibility = View.VISIBLE
+            }
             notificationAdapter.updateNotificationsList(it)
         }
 
         //Наблюдение за результатом опроса сайта и оповещение пользователя
         App.instance.interactor.getCheckDataResultLiveData().observe(this){
 //            Timber.d("getCheckDataResultLiveData%s", it)
-            if(!Utils.checkConnection(this)) Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
+            if(progressDialog.isShowing) progressDialog.dismiss()
+            if(binding.pullToRefresh.isRefreshing) binding.pullToRefresh.isRefreshing = false
+            var hideRVFlag = false
+            if(!Utils.checkConnection(this)) {
+                Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
+                hideRVFlag = true
+            }
             else
-                if(!it) Toast.makeText(this, getString(R.string.get_data_failed), Toast.LENGTH_LONG).show()
+                if(!it) {
+                    Toast.makeText(this, getString(R.string.get_data_failed), Toast.LENGTH_LONG).show()
+                    hideRVFlag = true
+                }
+            if(hideRVFlag){
+                val adapter = binding.operInfoRV.adapter
+                if(adapter?.itemCount == 0){
+                    binding.pullToRefresh.visibility = View.GONE
+                    binding.noDataView.visibility = View.VISIBLE
+                }
+            }
         }
 
+        binding.refreshBtn.setOnClickListener {
+            binding.noDataView.visibility = View.GONE
+            progressDialog.show()
+            App.instance.interactor.getData()
+        }
+
+        //Вешаем слушатель, чтобы вызвался pull to refresh
+        binding.pullToRefresh.setOnRefreshListener {
+            progressDialog.show()
+            App.instance.interactor.getData()
+        }
+
+        // Добавление действий для главного меню
+        initNavMenu()
+
+        //Инициализация наблюдения за изиенением данных в БД
+        App.instance.interactor.initDataObservable(this)
+
+        // Если программа запускается в первый раз
+        if(App.instance.interactor.getFirstLaunch())
+        {
+            // Активизируем приёмник
+            NotificationHelper.setEnableReceiver(App.instance.applicationContext, true )
+            App.instance.interactor.setFirstLaunch(false)
+
+            val builder = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Center)
+            builder.setTitle(getString(R.string.greetings))
+                .setMessage(getString(R.string.first_launch_app))
+                .setPositiveButton(getString(R.string.ok)){ dialog, _ ->
+                    // Проверка сети и оповещение пользователя
+                    if(!Utils.checkConnection(this)) {
+                        Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
+                        val adapter = binding.operInfoRV.adapter
+                        if(adapter?.itemCount == 0){
+                            binding.operInfoRV.visibility = View.GONE
+                            binding.noDataView.visibility = View.VISIBLE
+                        }
+                    } else{
+                        progressDialog.show()
+                        App.instance.interactor.getData()
+                    }
+                    dialog.dismiss()
+                }
+            val customDialog = builder.create()
+            customDialog.show()
+            customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
+        }
+
+        // Если будильник опроса не создан, то создаём
+        if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
+            createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
+    }
+
+    private fun initNavMenu(){
         // Добавление действий для главного меню
         binding.navView.setNavigationItemSelectedListener {
             when(it.itemId)
@@ -161,35 +263,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-        //Инициализация наблюдения за изиенением данных в БД
-        App.instance.interactor.initDataObservable(this)
-
-        progressDialog = ProgressDialog(this)
-        progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
-        progressDialog.show()
-
-        // Если программа запускается в первый раз
-        if(App.instance.interactor.getFirstLaunch())
-        {
-            // Активизируем приёмник
-            NotificationHelper.setEnableReceiver(App.instance.applicationContext, true )
-            App.instance.interactor.setFirstLaunch(false)
-
-            val builder = MaterialAlertDialogBuilder(this, R.style.MaterialAlertDialog_Center)
-            builder.setTitle(getString(R.string.greetings))
-                .setMessage(getString(R.string.first_launch_app))
-                .setPositiveButton(getString(R.string.ok)){ dialog, _ ->
-                    dialog.dismiss()
-                }
-            val customDialog = builder.create()
-            customDialog.show()
-            customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
-        }
-        // Если будильник опроса не создан, то создаём
-        if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
-            createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
-
     }
 
     override fun onBackPressed() {
@@ -199,6 +272,6 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-        notificationAdapter.updateNotificationsList(App.instance.interactor.getNotificationCachedList())
+//        notificationAdapter.updateNotificationsList(App.instance.interactor.getNotificationCachedList())
     }
 }

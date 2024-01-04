@@ -79,7 +79,7 @@ class MainRepository(private val notificationDao: NotificationDao) {
         if(cacheSize != 0) {
             val formatter = SimpleDateFormat("dd.MM.yyyy")
             newNotificationsList.forEach {
-                Timber.d("newNotificationsList" + it.id + " " + it.date + " " + it.notifiction)
+//                Timber.d("newNotificationsList" + it.id + " " + it.date + " " + it.notifiction)
                 try {
                     val dateFromNotif = formatter.format(it.date)
                     NotificationHelper.createNotification(

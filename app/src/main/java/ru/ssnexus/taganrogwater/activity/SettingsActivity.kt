@@ -5,11 +5,10 @@
 
 package ru.ssnexus.taganrogwater.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -21,10 +20,7 @@ import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.ActivitySettingsBinding
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
-import ru.ssnexus.taganrogwater.utils.NotificationHelper.cancelCheckDataAlarm
-import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarm
 import timber.log.Timber
-import kotlin.system.exitProcess
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
@@ -111,7 +107,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Timber.d("SettingsActivity Destroyed")
+//        Timber.d("SettingsActivity Destroyed")
         super.onDestroy()
     }
 

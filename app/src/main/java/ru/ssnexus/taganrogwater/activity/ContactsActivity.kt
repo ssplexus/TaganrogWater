@@ -110,7 +110,7 @@ class ContactsActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Timber.d("Activity Destroyed")
+//        Timber.d("Activity Destroyed")
         super.onDestroy()
     }
 }

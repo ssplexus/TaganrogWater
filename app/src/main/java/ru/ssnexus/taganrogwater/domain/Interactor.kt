@@ -5,10 +5,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
-import com.bumptech.glide.Glide.init
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
@@ -16,7 +14,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import ru.ssnexus.taganrogwater.*
+import ru.ssnexus.taganrogwater.App
+import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.activity.MainActivity
 import ru.ssnexus.taganrogwater.data.MainRepository
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData

@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -20,7 +19,6 @@ import kotlinx.coroutines.*
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
-import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.ActivityDetailsBinding
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.Utils

@@ -3,7 +3,6 @@ package ru.ssnexus.taganrogwater.preferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import ru.ssnexus.taganrogwater.App
 import timber.log.Timber
 
 class PreferencesProvider (context: Context) {

@@ -5,13 +5,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.WaterInfoViewBinding
@@ -140,7 +141,7 @@ class NotificationAdapter(private val context: Context, private var notification
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateNotificationsList(_notificationList: List<NotificationsData>){
-        Timber.d("updateNotificationsList")
+//        Timber.d("updateNotificationsList")
         notificationsData = ArrayList()
         if(!_notificationList.isEmpty()){
             notificationsData.addAll(_notificationList)
