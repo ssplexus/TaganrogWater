@@ -9,8 +9,7 @@
     app:cardBackgroundColor="@color/water"
     android:outlineAmbientShadowColor="@color/black"
     app:cardCornerRadius="15dp"
-    app:cardElevation="16dp"
-    app:cardMaxElevation="12dp"
+    app:cardElevation="8dp"
     app:cardPreventCornerOverlap="true"
 
     xmlns:tools="http://schemas.android.com/tools">

@@ -20,27 +20,25 @@ class NotificationReceiver: BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == "android.intent.action.BOOT_COMPLETED"){
-            if(App.instance.interactor.getCheckDataPref())
-            {
-                //NotificationHelper.createNotification(App.instance.applicationContext,
-                  //  Random().nextInt(1000),"01.01.2024", "Alarm Created")
-                NotificationHelper.createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
+            //NotificationHelper.createNotification(App.instance.applicationContext,
+              //  Random().nextInt(1000),"01.01.2024", "Alarm Created")
 
-                CoroutineScope(Dispatchers.IO).launch {
+            NotificationHelper.createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
 
-                        App.instance.interactor.getNotificationsListFromDB().forEach {
-                        if(it.marked > 0) {
-                            var dateFromNotif:String = ""
-                            val formatter = SimpleDateFormat("dd.MM.yyyy")
-                            try{
-                                dateFromNotif = formatter.format(it.date)
-                            } catch (e: ParseException){
-                                e.printStackTrace()
-                            }
-                            val period = it.marked * 60 * 60 * 1000L
-                            NotificationHelper.createNotificationAlarm(App.instance.applicationContext,
-                                it.id, dateFromNotif, it.notifiction, period)
+            CoroutineScope(Dispatchers.IO).launch {
+
+                    App.instance.interactor.getNotificationsListFromDB().forEach {
+                    if(it.marked > 0) {
+                        var dateFromNotif:String = ""
+                        val formatter = SimpleDateFormat("dd.MM.yyyy")
+                        try{
+                            dateFromNotif = formatter.format(it.date)
+                        } catch (e: ParseException){
+                            e.printStackTrace()
                         }
+                        val period = it.marked * 60 * 60 * 1000L
+                        NotificationHelper.createNotificationAlarm(App.instance.applicationContext,
+                            it.id, dateFromNotif, it.notifiction, period)
                     }
                 }
             }
@@ -49,7 +47,7 @@ class NotificationReceiver: BroadcastReceiver() {
             Timber.d("Check data!!!")
             //NotificationHelper.createNotification(App.instance.applicationContext,
               //  1000 + Random().nextInt(1000),"Check data", "Get data!!!")
-                App.instance.interactor.getData()
+            if(App.instance.interactor.getCheckDataPref()) App.instance.interactor.getData()
         }
 
         if(intent.action?.contains(AppConstants.ACTION_NOTIF_PREFIX) == true){

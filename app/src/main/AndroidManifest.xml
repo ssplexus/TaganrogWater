@@ -23,8 +23,7 @@
         android:theme="@style/splash_screen"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
-        <receiver
+       <receiver
             android:name=".receivers.NotificationReceiver"
             android:enabled="false">
             <intent-filter>

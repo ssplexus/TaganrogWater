@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
@@ -33,11 +34,11 @@ object NotificationHelper {
             mIntent.putExtra(AppConstants.MESSAGE_EXTRA, message)
 
             val pendingIntent =
-                PendingIntent.getActivity(context, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                PendingIntent.getActivity(context, id, mIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
             val notification = NotificationCompat.Builder(context, AppConstants.CHANNEL_ID)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources,
-                    R.drawable.splash_screen))
+                    if(Build.VERSION.SDK_INT <=  Build.VERSION_CODES.M ) R.drawable.tgnwater_icon_splashscreen else R.drawable.splash_screen))
                 .setSmallIcon(R.drawable.water_drop_icon)
                 .setContentTitle(title)
                 .setContentText(message)
@@ -52,31 +53,6 @@ object NotificationHelper {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(id, notification)
         }
-    }
-
-    fun createNotificationEvent(context: Context, dateTimeInMillis: Long, date: String, notif: String){
-        val intent = Intent(context, NotificationReceiver::class.java)
-        val title = date
-        val message = notif
-        intent.putExtra(AppConstants.TITLE_EXTRA, title)
-        intent.putExtra(AppConstants.MESSAGE_EXTRA, message)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            AppConstants.NOTIFICATION_ID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        //Получаем доступ к AlarmManager
-        val alarmManager =
-            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        //Устанавливаем Alarm
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP,
-            dateTimeInMillis,
-            pendingIntent
-        )
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
@@ -180,31 +156,5 @@ object NotificationHelper {
                 )
             }
         }
-    }
-
-    fun enableCheckDataAlarm(context: Context){
-        val receiver = ComponentName(context, NotificationReceiver::class.java)
-
-        if(context.packageManager.getComponentEnabledSetting(receiver) !=
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED){
-            context.packageManager.setComponentEnabledSetting(
-                receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP
-            )
-            if(isPresentCheckDataAlarm(context)) cancelCheckDataAlarm(context)
-            createCheckDataAlarm(context, AppConstants.CHECKDATA_PERIOD)
-        }else if(!isPresentCheckDataAlarm(context))
-            createCheckDataAlarm(context, AppConstants.CHECKDATA_PERIOD)
-    }
-
-    fun disableCheckDataAlarm(context: Context){
-        cancelCheckDataAlarm(context)
-        val receiver = ComponentName(context, NotificationReceiver::class.java)
-        context.packageManager.setComponentEnabledSetting(
-            receiver,
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-            PackageManager.DONT_KILL_APP
-        )
     }
 }

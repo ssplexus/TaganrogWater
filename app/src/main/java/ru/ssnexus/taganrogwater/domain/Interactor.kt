@@ -3,9 +3,13 @@ package ru.ssnexus.taganrogwater.domain
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.STORAGE_SERVICE
 import android.content.Intent
 import android.os.Build
+import android.os.Environment
+import android.os.storage.StorageManager
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -24,7 +28,13 @@ import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
 import ru.ssnexus.taganrogwater.utils.SingleLiveEvent
 import ru.ssnexus.taganrogwater.utils.addTo
 import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class Interactor(private val repo: MainRepository, private val prefs: PreferencesProvider) {
 
@@ -77,31 +87,34 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
         return repo.getMarkedStateById(id)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun getData(){
-        if(App.instance.interactor.getCheckDataPref()){
-            // Create a new coroutine scope
-            val scope = CoroutineScope(Dispatchers.Default)
-            // Launch a new coroutine in the scope
-            scope.launch {
-                val url = URL(AppConstants.DATA_URL)
-                try{
-                    val doc: Document = Jsoup.connect(url.toString()).get()
-                    var element = doc.select("table").get(1)
-                    val rows = element.select("tr")
-                    var notifications = ArrayList<String>()
 
-                    rows.forEach{row ->
-                        notifications.add(row.text())
-                    }
-                    notifications.removeLast()
+        appendLog("getData")
 
-                    if (!notifications.isEmpty()) repo.putToDb(notifications)
-                    checkDataResult.postValue(true)
-                }catch (e: Exception){
-                    Timber.d(e.printStackTrace().toString())
-                    checkDataResult.postValue(false)
+        // Create a new coroutine scope
+        val scope = CoroutineScope(Dispatchers.Default)
+        // Launch a new coroutine in the scope
+        scope.launch {
+            val url = URL(AppConstants.DATA_URL)
+            try{
+                val doc: Document = Jsoup.connect(url.toString()).get()
+                var element = doc.select("table").get(1)
+                val rows = element.select("tr")
+                var notifications = ArrayList<String>()
+
+                rows.forEach{row ->
+                    notifications.add(row.text())
                 }
+                notifications.removeLast()
+
+                if (!notifications.isEmpty()) {
+                    appendLog("notifications is not empty")
+                    repo.putToDb(notifications)
+                }
+                checkDataResult.postValue(true)
+            }catch (e: Exception){
+                Timber.d(e.printStackTrace().toString())
+                checkDataResult.postValue(false)
             }
         }
     }
@@ -163,5 +176,51 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
         )
     }
 
+    fun appendLog(text: String?) {
+        val time = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        val current = formatter.format(time)
+
+        try {
+
+//            val storageManager = App.instance.applicationContext.getSystemService(STORAGE_SERVICE) as StorageManager?
+//            val storageVolume = storageManager!!.storageVolumes[0] // internal Storage
+//            val path = storageVolume.directory?.path + "/Download/log.txt"
+            // Получение пути к внутреннему хранилищу приложения
+//            val documentsDir = File(App.instance.applicationContext.getExternalFilesDir(null), "Documents")
+//            val internalStoragePath = File(App.instance.applicationContext.filesDir, "log.txt")
+
+            // Создание объекта файла
+//            val file = File(internalStoragePath.absolutePath)
+
+            val downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+
+            if (!downloadFolder.exists()) {
+                downloadFolder.mkdirs()
+            }
+
+            val file = File("$downloadFolder/log.txt")
+            // Проверка, существует ли файл
+            if (!file.exists()) {
+                // Создание нового файла
+                file.createNewFile()
+            }
+
+            // Открытие потока для записи в файл
+            val fileOutputStream = FileOutputStream(file, true)
+            val outputStreamWriter = OutputStreamWriter(fileOutputStream)
+
+            // Запись текста в файл
+            outputStreamWriter.append("$current : $text")
+            outputStreamWriter.append("\n")
+
+            // Закрытие потоков
+            outputStreamWriter.close()
+            fileOutputStream.close()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
 }

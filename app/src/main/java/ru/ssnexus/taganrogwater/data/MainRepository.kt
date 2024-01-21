@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import io.reactivex.rxjava3.core.Observable
+import org.checkerframework.checker.units.qual.A
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.data.DAO.NotificationDao
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
@@ -16,7 +17,6 @@ import java.util.*
 class MainRepository(private val notificationDao: NotificationDao) {
     fun getNotificationsDataObservable() : Observable<List<NotificationsData>> = notificationDao.getCachedDataObservable()
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
     fun putToDb(list: ArrayList<String>) {
         val notificationsCached = notificationDao.getCachedData() as ArrayList<NotificationsData>
@@ -25,12 +25,11 @@ class MainRepository(private val notificationDao: NotificationDao) {
         val incomingNotificationsList = ArrayList<NotificationsData>()
         val newNotificationsList = ArrayList<NotificationsData>()
         val archNotificationsList = notificationsCached.toMutableList()
-
+        App.instance.interactor.appendLog("putToDb")
         list.forEach {
                 val srcText = it.trim()
                 val words = srcText.split(" ") as ArrayList<String>
                 if(!words.isEmpty() && words.size > 1){
-                    var ignore: Boolean = false
                     var dateStr = words.removeFirst()
                     val formatter = SimpleDateFormat("dd.MM.yy")
                     try {
@@ -76,6 +75,7 @@ class MainRepository(private val notificationDao: NotificationDao) {
         }
 
 
+        App.instance.interactor.appendLog("cacheSize")
         if(cacheSize != 0) {
             val formatter = SimpleDateFormat("dd.MM.yyyy")
             newNotificationsList.forEach {

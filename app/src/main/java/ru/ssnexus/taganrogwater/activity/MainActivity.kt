@@ -5,8 +5,10 @@
 
 package ru.ssnexus.taganrogwater.activity
 
+import android.Manifest
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -19,9 +21,15 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.BuildConfig
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.messaging.FirebaseMessaging
@@ -29,15 +37,21 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
+import ru.ssnexus.taganrogwater.AppConstants.STORAGE_PERMISSION_REQUEST_CODE
 import ru.ssnexus.taganrogwater.NotificationAdapter
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
+import ru.ssnexus.taganrogwater.services.GetDataWorker
 import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarm
 import ru.ssnexus.taganrogwater.utils.Utils
 import ru.ssnexus.taganrogwater.viewmodel.MainViewModel
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
@@ -86,8 +100,50 @@ class MainActivity : AppCompatActivity() {
                 AboutActivity.author_text += "\n" + fbVal
         }
 
+
+        // Проверяем, есть ли разрешение WRITE_EXTERNAL_STORAGE
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Уже есть разрешение, выполняем операции записи в хранилище
+            App.instance.interactor.appendLog("App Started")
+        } else {
+            // Разрешение не предоставлено, запрашиваем его у пользователя
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                STORAGE_PERMISSION_REQUEST_CODE
+            )
+        }
+
         // Инициализация
         initLayout()
+
+//        WorkManager.getInstance(App.instance.applicationContext)
+//            .getWorkInfosForUniqueWorkLiveData(AppConstants.GETDATA_WORKER_NAME)
+//            .observe(this) { workInfos ->
+//                if (workInfos != null && workInfos.isNotEmpty()) {
+//                    val workInfo = workInfos[0]
+//                    when (workInfo.state) {
+//                        WorkInfo.State.ENQUEUED -> {
+//                            // Задача в очереди, но еще не запущена
+//                            // Можно вызвать enqueue, если необходимо
+//                        }
+//                        WorkInfo.State.RUNNING -> {
+//                            // Задача уже запущена
+//                        }
+//                    }
+//                } else {
+//                    val myPeriodicWorkRequest = PeriodicWorkRequest.Builder(
+//                        GetDataWorker::class.java, AppConstants.CHECKDATA_PERIOD, TimeUnit.MILLISECONDS)
+//                        .addTag(AppConstants.GETDATA_WORKER_NAME)
+//                        .build()
+//
+//                    WorkManager.getInstance(App.instance.applicationContext).enqueue(myPeriodicWorkRequest)
+//                }
+//            }
     }
 
     private fun closeApp(){
@@ -160,6 +216,7 @@ class MainActivity : AppCompatActivity() {
                 binding.pullToRefresh.visibility = View.VISIBLE
                 binding.operInfoRV.visibility = View.VISIBLE
             }
+//            App.instance.interactor.appendLog("receiveData")
             notificationAdapter.updateNotificationsList(it)
         }
 
@@ -224,10 +281,8 @@ class MainActivity : AppCompatActivity() {
                             binding.operInfoRV.visibility = View.GONE
                             binding.noDataView.visibility = View.VISIBLE
                         }
-                    } else{
-                        progressDialog.show()
-                        App.instance.interactor.getData()
                     }
+                    progressDialog.show()
                     dialog.dismiss()
                 }
             val customDialog = builder.create()
@@ -273,5 +328,30 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 //        notificationAdapter.updateNotificationsList(App.instance.interactor.getNotificationCachedList())
+    }
+
+    // Метод вызывается после ответа пользователя на запрос разрешения
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            STORAGE_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Разрешение предоставлено, выполняем операции записи в хранилище
+                    App.instance.interactor.appendLog("App Started")
+                } else {
+                    // Разрешение не предоставлено, выводим сообщение об ошибке
+                    Toast.makeText(
+                        this,
+                        "Разрешение на запись во внешнее хранилище не предоставлено",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 }
