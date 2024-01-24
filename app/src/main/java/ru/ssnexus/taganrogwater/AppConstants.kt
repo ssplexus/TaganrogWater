@@ -19,12 +19,17 @@ object AppConstants {
 
     const val ACTION_CHECKDATA = "CheckData"
     const val ACTION_NOTIF_PREFIX = "Notif_"
+    const val ACTION_CHECK_CHECKDATA_ALARM = "CheckDataAlarm"
 
-    const val CHECKDATA_PERIOD : Long = 60 * 10 * 1000
+
+    const val CHECKDATA_PERIOD : Long = 60 * 15 * 1000
+    const val CHECK_CHECKDATA_ALARM_PERIOD : Long = 60 * 30 * 1000
 //    const val CHECKDATA_PERIOD : Long = 8000
 
-    const val GETDATA_WORKER_NAME = "get_data_worker_name"
+//    const val GETDATA_WORKER_NAME = "get_data_worker_name"
     const val STORAGE_PERMISSION_REQUEST_CODE = 13
-    const val LOG_FILE_PATH = ""
+    const val CHECKDATA_ALARM_REQUEST_CODE = -1
+    const val CHECK_CHECKDATA_ALARM_REQUEST_CODE = -2
+//    const val LOG_FILE_PATH = ""
 
 }

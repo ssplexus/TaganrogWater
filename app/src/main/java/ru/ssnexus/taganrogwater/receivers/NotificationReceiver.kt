@@ -50,6 +50,20 @@ class NotificationReceiver: BroadcastReceiver() {
             if(App.instance.interactor.getCheckDataPref()) App.instance.interactor.getData()
         }
 
+        if (intent.action == AppConstants.ACTION_CHECK_CHECKDATA_ALARM){
+            App.instance.interactor.appendLog("ACTION_CHECK_CHECKDATA_ALARM")
+            App.instance.interactor.appendLog(AppConstants.ACTION_CHECK_CHECKDATA_ALARM)
+            if(App.instance.interactor.getCheckDataPref()){
+                // Если будильник опроса не создан, то создаём
+                if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_ALARM_REQUEST_CODE))
+                    NotificationHelper.createCheckDataAlarm(
+                        App.instance.applicationContext,
+                        AppConstants.CHECKDATA_PERIOD
+                    )
+            }
+            NotificationHelper.createCheckCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_PERIOD)
+        }
+
         if(intent.action?.contains(AppConstants.ACTION_NOTIF_PREFIX) == true){
             val extras = intent.extras
             if(extras != null)

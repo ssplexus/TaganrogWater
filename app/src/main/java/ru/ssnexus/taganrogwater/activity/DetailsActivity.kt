@@ -48,11 +48,11 @@ class DetailsActivity : AppCompatActivity() {
         val formatter = SimpleDateFormat("dd.MM.yyyy")
         if(savedInstanceState == null)
         {
-            Timber.d("savedInstanceState")
+//            Timber.d("savedInstanceState")
             val extras = intent.extras
             if(extras != null)
             {
-                Timber.d("Extras!!!")
+//                Timber.d("Extras!!!")
                 notificationId = extras.getInt(AppConstants.ID_EXTRA)
                 strDate = extras.getString(AppConstants.TITLE_EXTRA,"")
 
@@ -193,7 +193,7 @@ class DetailsActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Timber.d("DetailsActivity Destroyed")
+//        Timber.d("DetailsActivity Destroyed")
         super.onDestroy()
     }
 }

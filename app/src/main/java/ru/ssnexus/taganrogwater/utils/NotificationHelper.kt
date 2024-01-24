@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
@@ -56,9 +57,9 @@ object NotificationHelper {
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
-    fun isPresentCheckDataAlarm(context: Context): Boolean{
+    fun isPresentAlarm(context: Context, requestCode: Int): Boolean{
         val intent = Intent(context, NotificationReceiver::class.java)
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_NO_CREATE) != null
+        return PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE) != null
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
@@ -72,7 +73,7 @@ object NotificationHelper {
                 = Intent(context, NotificationReceiver::class.java).let { intent ->
             intent.action = AppConstants.ACTION_CHECKDATA
             PendingIntent.getBroadcast(context,
-                0,
+                AppConstants.CHECKDATA_ALARM_REQUEST_CODE,
                 intent,
                 0)
         }
@@ -84,6 +85,27 @@ object NotificationHelper {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun createCheckCheckDataAlarm(context: Context, period: Long){
+        Timber.d("createCheckCheckDataAlarm!!!")
+        //Получаем доступ к AlarmManager
+        val alarmManager =
+            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val alarmIntent:PendingIntent
+                = Intent(context, NotificationReceiver::class.java).let { intent ->
+            intent.action = AppConstants.ACTION_CHECK_CHECKDATA_ALARM
+            PendingIntent.getBroadcast(context,
+                AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE,
+                intent,
+                0)
+        }
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            System.currentTimeMillis() + period,
+            alarmIntent
+        )
+    }
 
     @SuppressLint("UnspecifiedImmutableFlag")
     fun createNotificationAlarm(context: Context, id: Int, date: String, notification: String, period: Long){
@@ -102,7 +124,7 @@ object NotificationHelper {
             intent.putExtra(AppConstants.MESSAGE_EXTRA, notification)
 
             PendingIntent.getBroadcast(context,
-                0,
+                id,
                 intent,
                 0)
         }
@@ -120,7 +142,7 @@ object NotificationHelper {
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.action = AppConstants.ACTION_NOTIF_PREFIX + id.toString()
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(context, id, intent, 0)
         alarmManager.cancel(pendingIntent)
     }
 
@@ -130,7 +152,17 @@ object NotificationHelper {
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.action = AppConstants.ACTION_CHECKDATA
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(context, AppConstants.CHECKDATA_ALARM_REQUEST_CODE, intent, 0)
+        alarmManager.cancel(pendingIntent)
+    }
+
+    fun cancelCheckCheckDataAlarm(context: Context){
+//        Timber.d("cancelCheckDataAlarm!!!")
+        val alarmManager =
+            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, NotificationReceiver::class.java)
+        intent.action = AppConstants.ACTION_CHECK_CHECKDATA_ALARM
+        val pendingIntent = PendingIntent.getBroadcast(context, AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE, intent, 0)
         alarmManager.cancel(pendingIntent)
     }
 

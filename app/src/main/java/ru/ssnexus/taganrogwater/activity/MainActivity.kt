@@ -44,6 +44,7 @@ import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
 import ru.ssnexus.taganrogwater.services.GetDataWorker
 import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
+import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckCheckDataAlarm
 import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarm
 import ru.ssnexus.taganrogwater.utils.Utils
 import ru.ssnexus.taganrogwater.viewmodel.MainViewModel
@@ -290,9 +291,13 @@ class MainActivity : AppCompatActivity() {
             customDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(R.color.dark_water))
         }
 
+        Timber.d("Main Started!!!")
         // Если будильник опроса не создан, то создаём
-        if(!NotificationHelper.isPresentCheckDataAlarm(App.instance.applicationContext))
+        if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_ALARM_REQUEST_CODE))
             createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
+
+        if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE))
+            createCheckCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_PERIOD)
     }
 
     private fun initNavMenu(){
