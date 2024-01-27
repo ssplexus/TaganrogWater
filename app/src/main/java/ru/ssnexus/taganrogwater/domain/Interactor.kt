@@ -45,6 +45,7 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
 
     }
 
+    // Инициализация наблюдателя за данными в БД
     fun initDataObservable(main: MainActivity){
             repo.getNotificationsDataObservable().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -87,10 +88,9 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
         return repo.getMarkedStateById(id)
     }
 
+    // Метод опроса сайта
     fun getData(){
-
         appendLog("getData")
-
         // Create a new coroutine scope
         val scope = CoroutineScope(Dispatchers.Default)
         // Launch a new coroutine in the scope
@@ -111,9 +111,11 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
                     appendLog("notifications is not empty")
                     repo.putToDb(notifications)
                 }
+                // Отправка результата опроса
                 checkDataResult.postValue(true)
             }catch (e: Exception){
                 Timber.d(e.printStackTrace().toString())
+                // Отправка результата опроса
                 checkDataResult.postValue(false)
             }
         }
@@ -150,31 +152,6 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     }
 
     fun checkNotificationId(id: Int) = repo.checkNotificationId(id)
-
-    fun createNotificationRightNow(date: String, notif: String){
-        val intent = Intent(App.instance.applicationContext, NotificationReceiver::class.java)
-        val title = date
-        val message = notif
-        intent.putExtra(AppConstants.TITLE_EXTRA, title)
-        intent.putExtra(AppConstants.MESSAGE_EXTRA, message)
-        val pendingIntent = PendingIntent.getBroadcast(
-            App.instance.applicationContext,
-            AppConstants.NOTIFICATION_ID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        //Получаем доступ к AlarmManager
-        val alarmManager =
-            App.instance.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        //Устанавливаем Alarm
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP,
-            1000,
-            pendingIntent
-        )
-    }
 
     fun appendLog(text: String?) {
         val time = Calendar.getInstance().time

@@ -19,12 +19,18 @@ import java.text.ParseException
 class NotificationReceiver: BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
+
+        // Пересоздание напоминаний и будильников в случае перезагрузки устройства
         if (intent.action == "android.intent.action.BOOT_COMPLETED"){
             //NotificationHelper.createNotification(App.instance.applicationContext,
               //  Random().nextInt(1000),"01.01.2024", "Alarm Created")
 
+            // Создание будильника проверки будильника опроса сайта на случай прерывания его (страхующий будильник)
+            NotificationHelper.createCheckCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_PERIOD)
+            // Создание будильника опроса сайта
             NotificationHelper.createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
 
+            // Пересоздание напоминаний
             CoroutineScope(Dispatchers.IO).launch {
 
                     App.instance.interactor.getNotificationsListFromDB().forEach {
@@ -43,16 +49,30 @@ class NotificationReceiver: BroadcastReceiver() {
                 }
             }
         }
+
+        // Если событие запроса данных с сайта
         if (intent.action == AppConstants.ACTION_CHECKDATA){
-            Timber.d("Check data!!!")
+            Timber.d("ACTION_CHECKDATA")
             //NotificationHelper.createNotification(App.instance.applicationContext,
               //  1000 + Random().nextInt(1000),"Check data", "Get data!!!")
+
+            // Если страхующий будильник прервался то пересоздаём
+            if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE)){
+                App.instance.interactor.appendLog("RECREATE ACTION_CHECK_CHECKDATA_ALARM")
+                NotificationHelper.createCheckCheckDataAlarm(
+                    App.instance.applicationContext,
+                    AppConstants.CHECK_CHECKDATA_ALARM_PERIOD
+                )
+            }
+            // Опрос сайта
             if(App.instance.interactor.getCheckDataPref()) App.instance.interactor.getData()
         }
 
+        // Если событие проверки будильника опроса сайта
         if (intent.action == AppConstants.ACTION_CHECK_CHECKDATA_ALARM){
             App.instance.interactor.appendLog("ACTION_CHECK_CHECKDATA_ALARM")
-            App.instance.interactor.appendLog(AppConstants.ACTION_CHECK_CHECKDATA_ALARM)
+
+            // Если установлен параметр проверки данных
             if(App.instance.interactor.getCheckDataPref()){
                 // Если будильник опроса не создан, то создаём
                 if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_ALARM_REQUEST_CODE))
@@ -61,9 +81,11 @@ class NotificationReceiver: BroadcastReceiver() {
                         AppConstants.CHECKDATA_PERIOD
                     )
             }
+            // Создание страхующего будильника для будильника опроса сайта
             NotificationHelper.createCheckCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_PERIOD)
         }
 
+        // Если событие нажатие на оповещение
         if(intent.action?.contains(AppConstants.ACTION_NOTIF_PREFIX) == true){
             val extras = intent.extras
             if(extras != null)

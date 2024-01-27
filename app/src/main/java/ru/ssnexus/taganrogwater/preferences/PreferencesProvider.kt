@@ -16,7 +16,6 @@ class PreferencesProvider (context: Context) {
             preference.edit { putBoolean(KEY_SHOW_ARCHIVE_SWITCH, true) }
             preference.edit { putBoolean(KEY_SHOW_NOTIF_SWITCH, true) }
             preference.edit { putBoolean(KEY_CHECK_DATA_SWITCH, true) }
-//            preference.edit { putBoolean(KEY_FIRST_LAUNCH, false) }
             preference.edit { putLong(KEY_FIRST_LAUNCH_TIME, System.currentTimeMillis())}
         }
     }

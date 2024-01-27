@@ -22,6 +22,7 @@ import timber.log.Timber
 
 object NotificationHelper {
 
+    // Создание оповещения
     fun createNotification(context: Context, id: Int, date: String, notif: String){
 //        Timber.d("createNotification!!!")
         if(App.instance.interactor.getShowNotifPref()){
@@ -56,15 +57,16 @@ object NotificationHelper {
         }
     }
 
+    // Проверка наличия будильника
     @SuppressLint("UnspecifiedImmutableFlag")
     fun isPresentAlarm(context: Context, requestCode: Int): Boolean{
         val intent = Intent(context, NotificationReceiver::class.java)
         return PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE) != null
     }
 
+    // Создание будильника опроса сайта
     @SuppressLint("UnspecifiedImmutableFlag")
     fun createCheckDataAlarm(context: Context, period: Long){
-//        Timber.d("createCheckDataAlarm!!!")
         //Получаем доступ к AlarmManager
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -85,6 +87,7 @@ object NotificationHelper {
         )
     }
 
+    // Создание будильника проверки наличия будильника опроса сайта
     @RequiresApi(Build.VERSION_CODES.M)
     fun createCheckCheckDataAlarm(context: Context, period: Long){
         Timber.d("createCheckCheckDataAlarm!!!")
@@ -107,9 +110,9 @@ object NotificationHelper {
         )
     }
 
+    // Создание будильника напоминания о событии
     @SuppressLint("UnspecifiedImmutableFlag")
     fun createNotificationAlarm(context: Context, id: Int, date: String, notification: String, period: Long){
-//        Timber.d("createCheckDataAlarm!!!")
         //Получаем доступ к AlarmManager
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -136,8 +139,8 @@ object NotificationHelper {
         )
     }
 
+    // Отмена будильника напоминания о событии
     fun cancelNotificationAlarm(context: Context, id: Int){
-//        Timber.d("cancelCheckDataAlarm!!!")
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
@@ -146,8 +149,8 @@ object NotificationHelper {
         alarmManager.cancel(pendingIntent)
     }
 
+    // Отмена будильника проверки данных
     fun cancelCheckDataAlarm(context: Context){
-//        Timber.d("cancelCheckDataAlarm!!!")
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
@@ -166,6 +169,7 @@ object NotificationHelper {
         alarmManager.cancel(pendingIntent)
     }
 
+    // Включение/выключение приёмника
     fun setEnableReceiver(context: Context, flag: Boolean){
         val receiver = ComponentName(context, NotificationReceiver::class.java)
         if(flag){

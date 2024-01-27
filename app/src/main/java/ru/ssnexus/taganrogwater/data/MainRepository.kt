@@ -52,7 +52,6 @@ class MainRepository(private val notificationDao: NotificationDao) {
                 }
         }
 
-
         incomingNotificationsList.forEach { newNotif ->
             var newFlag = true
             notificationsCached.forEach { cachedNotif ->
@@ -74,12 +73,10 @@ class MainRepository(private val notificationDao: NotificationDao) {
             }
         }
 
-
-        App.instance.interactor.appendLog("cacheSize")
+        App.instance.interactor.appendLog("СacheSize=$cacheSize")
         if(cacheSize != 0) {
             val formatter = SimpleDateFormat("dd.MM.yyyy")
             newNotificationsList.forEach {
-//                Timber.d("newNotificationsList" + it.id + " " + it.date + " " + it.notifiction)
                 try {
                     val dateFromNotif = formatter.format(it.date)
                     NotificationHelper.createNotification(
