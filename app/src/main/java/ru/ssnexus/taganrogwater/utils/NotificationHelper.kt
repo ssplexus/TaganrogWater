@@ -59,8 +59,9 @@ object NotificationHelper {
 
     // Проверка наличия будильника
     @SuppressLint("UnspecifiedImmutableFlag")
-    fun isPresentAlarm(context: Context, requestCode: Int): Boolean{
+    fun isPresentAlarm(context: Context, action: String, requestCode: Int): Boolean{
         val intent = Intent(context, NotificationReceiver::class.java)
+        intent.action = action
         return PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE) != null
     }
 
@@ -81,7 +82,7 @@ object NotificationHelper {
         }
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
-            System.currentTimeMillis() + 5000,
+            System.currentTimeMillis() + period / 2,
             period,
             alarmIntent
         )

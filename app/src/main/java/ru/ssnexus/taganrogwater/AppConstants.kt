@@ -8,7 +8,6 @@ object AppConstants {
 
     const val CONTACTS_URL = "http://www.tgnvoda.ru/kontakt.html"
 
-    const val NOTIFICATION_ID = 1
     const val CHANNEL_ID = "channel1"
     const val CHANNEL_NAME = "notif channel"
     const val CHANNEL_DESCR = "A Description of the Channel"
@@ -27,5 +26,4 @@ object AppConstants {
     const val STORAGE_PERMISSION_REQUEST_CODE = 13
     const val CHECKDATA_ALARM_REQUEST_CODE = -1
     const val CHECK_CHECKDATA_ALARM_REQUEST_CODE = -2
-
 }

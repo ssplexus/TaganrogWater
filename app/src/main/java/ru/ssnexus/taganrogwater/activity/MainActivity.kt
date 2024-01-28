@@ -44,7 +44,6 @@ import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarm
 import ru.ssnexus.taganrogwater.utils.Utils
 import ru.ssnexus.taganrogwater.viewmodel.MainViewModel
 import timber.log.Timber
-import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
@@ -259,10 +258,16 @@ class MainActivity : AppCompatActivity() {
 
         Timber.d("Main Started!!!")
         // Если будильник опроса не создан, то создаём
-        if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_ALARM_REQUEST_CODE))
+        if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext,
+                AppConstants.ACTION_CHECKDATA,
+                AppConstants.CHECKDATA_ALARM_REQUEST_CODE)){
+            App.instance.interactor.getData()
             createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
+        }
 
-        if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE))
+        if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext,
+                AppConstants.ACTION_CHECK_CHECKDATA_ALARM,
+                AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE))
             createCheckCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_PERIOD)
     }
 
