@@ -15,6 +15,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -39,8 +40,7 @@ import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
 import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
-import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckCheckDataAlarm
-import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarm
+import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarmOneShot
 import ru.ssnexus.taganrogwater.utils.Utils
 import ru.ssnexus.taganrogwater.viewmodel.MainViewModel
 import timber.log.Timber
@@ -155,6 +155,7 @@ class MainActivity : AppCompatActivity() {
         setTheme(R.style.Theme_TaganrogWater)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         // Добавляем главное меню
         toggle = ActionBarDrawerToggle(this, binding.root, R.string.open, R.string.close)
         binding.root.addDrawerListener(toggle)
@@ -165,7 +166,18 @@ class MainActivity : AppCompatActivity() {
         progressDialog = ProgressDialog(this)
         progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
         progressDialog.setCancelable(false)
-//        progressDialog.show()
+
+        val searchView = binding.searchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if(newText != null) notificationAdapter.filterSearchList(newText)
+                else notificationAdapter.filterSearchList("")
+                return true
+            }
+        })
 
         // Инициализация RView
         binding.operInfoRV.setHasFixedSize(true)
@@ -258,17 +270,14 @@ class MainActivity : AppCompatActivity() {
 
         Timber.d("Main Started!!!")
         // Если будильник опроса не создан, то создаём
+
         if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext,
                 AppConstants.ACTION_CHECKDATA,
                 AppConstants.CHECKDATA_ALARM_REQUEST_CODE)){
+            App.instance.interactor.appendLog("FirstLaunch")
             App.instance.interactor.getData()
-            createCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
+            createCheckDataAlarmOneShot(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
         }
-
-        if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext,
-                AppConstants.ACTION_CHECK_CHECKDATA_ALARM,
-                AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE))
-            createCheckCheckDataAlarm(App.instance.applicationContext, AppConstants.CHECK_CHECKDATA_ALARM_PERIOD)
     }
 
     private fun initNavMenu(){

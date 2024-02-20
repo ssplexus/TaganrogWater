@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.res.Configuration
 import android.os.Build
-import androidx.room.Room
 import androidx.room.Room.databaseBuilder
 import ru.ssnexus.taganrogwater.AppConstants.CHANNEL_DESCR
 import ru.ssnexus.taganrogwater.AppConstants.CHANNEL_ID
@@ -14,7 +13,6 @@ import ru.ssnexus.taganrogwater.data.MainRepository
 import ru.ssnexus.taganrogwater.data.db.AppDatabase
 import ru.ssnexus.taganrogwater.domain.Interactor
 import ru.ssnexus.taganrogwater.preferences.PreferencesProvider
-import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import timber.log.Timber
 
 class App: Application() {

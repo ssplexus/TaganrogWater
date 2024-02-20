@@ -11,6 +11,8 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/water</item>
+        <item name="android:navigationBarColor">@color/water</item>
+
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <!--        <item name="android:windowLightStatusBar">true</item>-->
         <!-- Customize your theme here. -->
@@ -20,6 +22,7 @@
         <item name="android:statusBarColor" tools:targetApi="l">@color/water</item>
         <item name="android:windowBackground">@drawable/splash_screen</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:navigationBarColor">@color/water</item>
     </style>
 
 
@@ -38,6 +41,11 @@
 
     <style name="Button.Center" parent="MaterialAlertDialog.MaterialComponents.Title.Icon">
         <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <!-- Customize other attributes as needed -->
+        <item name="android:background">@color/white</item>
     </style>
 
 </resources>

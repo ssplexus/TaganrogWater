@@ -1,20 +1,14 @@
 package ru.ssnexus.taganrogwater.utils
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.NetworkInfo
 import android.os.Build
 import android.view.Window
 import android.widget.*
-import com.google.common.primitives.UnsignedBytes.toInt
-import kotlinx.coroutines.*
-import org.checkerframework.checker.units.qual.s
-import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
 import java.io.IOException

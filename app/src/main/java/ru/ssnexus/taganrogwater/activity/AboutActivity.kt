@@ -5,13 +5,10 @@
 
 package ru.ssnexus.taganrogwater.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import androidx.appcompat.app.AppCompatActivity
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityAboutBinding
 

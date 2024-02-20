@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
@@ -65,6 +64,30 @@ object NotificationHelper {
         return PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE) != null
     }
 
+
+    // Создание будильника проверки наличия будильника опроса сайта
+    fun createCheckDataAlarmOneShot(context: Context, period: Long){
+        Timber.d("createCheckDataAlarmOneShot!!!")
+        App.instance.interactor.appendLog("createCheckDataAlarmOneShot")
+        //Получаем доступ к AlarmManager
+        val alarmManager =
+            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val alarmIntent:PendingIntent
+                = Intent(context, NotificationReceiver::class.java).let { intent ->
+            intent.action = AppConstants.ACTION_CHECKDATA
+            PendingIntent.getBroadcast(context,
+                AppConstants.CHECKDATA_ALARM_REQUEST_CODE,
+                intent,
+                0)
+        }
+        alarmManager.setExact(
+            AlarmManager.RTC_WAKEUP,
+            System.currentTimeMillis() + period,
+            alarmIntent
+        )
+    }
+
     // Создание будильника опроса сайта
     @SuppressLint("UnspecifiedImmutableFlag")
     fun createCheckDataAlarm(context: Context, period: Long){
@@ -84,29 +107,6 @@ object NotificationHelper {
             AlarmManager.RTC_WAKEUP,
             System.currentTimeMillis() + period / 2,
             period,
-            alarmIntent
-        )
-    }
-
-    // Создание будильника проверки наличия будильника опроса сайта
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun createCheckCheckDataAlarm(context: Context, period: Long){
-        Timber.d("createCheckCheckDataAlarm!!!")
-        //Получаем доступ к AlarmManager
-        val alarmManager =
-            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val alarmIntent:PendingIntent
-                = Intent(context, NotificationReceiver::class.java).let { intent ->
-            intent.action = AppConstants.ACTION_CHECK_CHECKDATA_ALARM
-            PendingIntent.getBroadcast(context,
-                AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE,
-                intent,
-                0)
-        }
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            System.currentTimeMillis() + period,
             alarmIntent
         )
     }
@@ -157,16 +157,6 @@ object NotificationHelper {
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.action = AppConstants.ACTION_CHECKDATA
         val pendingIntent = PendingIntent.getBroadcast(context, AppConstants.CHECKDATA_ALARM_REQUEST_CODE, intent, 0)
-        alarmManager.cancel(pendingIntent)
-    }
-
-    fun cancelCheckCheckDataAlarm(context: Context){
-//        Timber.d("cancelCheckDataAlarm!!!")
-        val alarmManager =
-            context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, NotificationReceiver::class.java)
-        intent.action = AppConstants.ACTION_CHECK_CHECKDATA_ALARM
-        val pendingIntent = PendingIntent.getBroadcast(context, AppConstants.CHECK_CHECKDATA_ALARM_REQUEST_CODE, intent, 0)
         alarmManager.cancel(pendingIntent)
     }
 

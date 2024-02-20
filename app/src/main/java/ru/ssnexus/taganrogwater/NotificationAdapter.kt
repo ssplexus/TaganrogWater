@@ -18,11 +18,13 @@ import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.WaterInfoViewBinding
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.Utils
-import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.*
 
 class NotificationAdapter(private val context: Context, private var notificationsData: ArrayList<NotificationsData>):RecyclerView.Adapter<NotificationAdapter.NotificationHolder>() {
+    var searchQuery : String = ""
+
     class NotificationHolder(binding: WaterInfoViewBinding):RecyclerView.ViewHolder(binding.root) {
         val itemContainer = binding.itemContainer
         val date = binding.dateData
@@ -154,10 +156,28 @@ class NotificationAdapter(private val context: Context, private var notification
                 }
             }
         }
-
-        notifyDataSetChanged()
+        if(searchQuery.isEmpty())
+            notifyDataSetChanged()
+        else
+            filterSearchList(searchQuery)
     }
-    fun updateRecyclerView(){
-        notifyDataSetChanged()
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun filterSearchList(query: String){
+        val filteredNotificationsList = ArrayList<NotificationsData>()
+        val srcNotificationsList = App.instance.interactor.getNotificationsCachedList()
+        if(!query.isEmpty()) {
+            searchQuery = query
+            for (notif in srcNotificationsList) {
+                if (notif.notifiction.toLowerCase(Locale.ROOT)
+                        .contains(query)
+                ) filteredNotificationsList.add(notif)
+            }
+            notificationsData = filteredNotificationsList
+            notifyDataSetChanged()
+        } else {
+            notificationsData = srcNotificationsList
+            notifyDataSetChanged()
+        }
     }
 }

@@ -1,15 +1,11 @@
 package ru.ssnexus.taganrogwater.data
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import io.reactivex.rxjava3.core.Observable
-import org.checkerframework.checker.units.qual.A
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.data.DAO.NotificationDao
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
-import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*

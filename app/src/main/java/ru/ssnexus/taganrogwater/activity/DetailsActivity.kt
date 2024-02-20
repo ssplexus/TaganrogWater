@@ -22,7 +22,6 @@ import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityDetailsBinding
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.Utils
-import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*

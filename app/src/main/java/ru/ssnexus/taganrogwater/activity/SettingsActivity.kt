@@ -20,7 +20,6 @@ import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.ActivitySettingsBinding
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
-import timber.log.Timber
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding

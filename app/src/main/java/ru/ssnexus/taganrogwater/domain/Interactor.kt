@@ -1,15 +1,6 @@
 package ru.ssnexus.taganrogwater.domain
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Context.STORAGE_SERVICE
-import android.content.Intent
-import android.os.Build
 import android.os.Environment
-import android.os.storage.StorageManager
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -18,13 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.activity.MainActivity
 import ru.ssnexus.taganrogwater.data.MainRepository
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.preferences.PreferencesProvider
-import ru.ssnexus.taganrogwater.receivers.NotificationReceiver
 import ru.ssnexus.taganrogwater.utils.SingleLiveEvent
 import ru.ssnexus.taganrogwater.utils.addTo
 import timber.log.Timber
@@ -64,17 +53,13 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
             }.addTo(main.autoDisposable)
     }
 
-    fun getNotificationCachedList() = notificationCachedList
+    fun getNotificationsCachedList() = notificationCachedList
 
     fun getNotificationsListFromDB() = repo.getCachedData()
 
     fun getNotificationLiveData() = notificationLiveData
 
     fun getCheckDataResultLiveData() = checkDataResult
-
-    fun updateMarkedStateById(id: Int){
-        repo.updateMarkedStateById(id)
-    }
 
     fun setMarkedStateById(id: Int, value: Int){
         repo.setMarkedStateById(id, value)
@@ -146,12 +131,6 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     fun unmarkAllNotifications() = repo.unmarkAllNotifications()
 
     fun getMarkedNotifications() = repo.getMarkedNotifications()
-
-    fun clearCachedData() {
-        repo.clearData()
-    }
-
-    fun checkNotificationId(id: Int) = repo.checkNotificationId(id)
 
     fun appendLog(text: String?) {
         val time = Calendar.getInstance().time
