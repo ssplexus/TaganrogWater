@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
+import ru.ssnexus.taganrogwater.activity.MainActivity
 import ru.ssnexus.taganrogwater.data.entity.NotificationsData
 import ru.ssnexus.taganrogwater.databinding.WaterInfoViewBinding
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
@@ -68,6 +69,8 @@ class NotificationAdapter(private val context: Context, private var notification
         }
 
         holder.actionBtn.setOnClickListener {
+            MainActivity.mSearchView.clearFocus()
+
             val builder = MaterialAlertDialogBuilder(context)
             builder.setTitle(context.getString(R.string.period_settings))
                 .setMessage(context.getString(
@@ -128,6 +131,7 @@ class NotificationAdapter(private val context: Context, private var notification
 
 //        holder.itemContainer.setCardBackgroundColor(context.resources.getColor(R.color.gray))
         holder.itemContainer.setOnClickListener {
+            MainActivity.mSearchView.clearFocus()
             DetailsActivity.notificationId = notificationsData[position].id
             DetailsActivity.notificationMarked = marked
             DetailsActivity.notificationDate = notificationsData[position].date
@@ -144,8 +148,8 @@ class NotificationAdapter(private val context: Context, private var notification
     @SuppressLint("NotifyDataSetChanged")
     fun updateNotificationsList(_notificationList: List<NotificationsData>){
 //        Timber.d("updateNotificationsList")
-        notificationsData = ArrayList()
         if(!_notificationList.isEmpty()){
+            notificationsData = ArrayList()
             notificationsData.addAll(_notificationList)
 
             if(!App.instance.interactor.getShowArchivePref()){

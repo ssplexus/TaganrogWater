@@ -51,6 +51,9 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider.NewInstanceFactory().create(MainViewModel::class.java)
     }
+    companion object{
+        lateinit var mSearchView: SearchView
+    }
 
     val autoDisposable = AutoDisposable()
     private lateinit var progressDialog: ProgressDialog
@@ -142,6 +145,7 @@ class MainActivity : AppCompatActivity() {
         val id = item.itemId
         // Добавление действия для кнопки в правом верхнем углу формы
         if (id == R.id.actionId){
+            binding.searchView.clearFocus()
             startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
             return true
         }
@@ -154,6 +158,7 @@ class MainActivity : AppCompatActivity() {
     private fun initLayout(){
         setTheme(R.style.Theme_TaganrogWater)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        mSearchView = binding.searchView
         setContentView(binding.root)
 
         // Добавляем главное меню
@@ -195,6 +200,11 @@ class MainActivity : AppCompatActivity() {
                 binding.pullToRefresh.visibility = View.VISIBLE
                 binding.operInfoRV.visibility = View.VISIBLE
             }
+            else{
+                binding.operInfoRV.visibility = View.GONE
+                binding.noDataView.visibility = View.VISIBLE
+            }
+
             notificationAdapter.updateNotificationsList(it)
         }
 
@@ -283,6 +293,7 @@ class MainActivity : AppCompatActivity() {
     private fun initNavMenu(){
         // Добавление действий для главного меню
         binding.navView.setNavigationItemSelectedListener {
+            binding.searchView.clearFocus()
             when(it.itemId)
             {
                 R.id.settings -> {
@@ -292,6 +303,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.contacts -> {
                     onBackPressed()
                     startActivity(Intent(this@MainActivity, ContactsActivity::class.java))
+                }
+                R.id.help -> {
+                    onBackPressed()
+                    startActivity(Intent(this@MainActivity, HelpActivity::class.java))
                 }
                 R.id.about -> {
                     onBackPressed()
@@ -312,7 +327,9 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-//        notificationAdapter.updateNotificationsList(App.instance.interactor.getNotificationCachedList())
+        Timber.d("onResume MainActivity")
+        notificationAdapter.searchQuery = binding.searchView.query.toString()
+        notificationAdapter.updateNotificationsList(App.instance.interactor.getNotificationsCachedList())
     }
 
     // Метод вызывается после ответа пользователя на запрос разрешения

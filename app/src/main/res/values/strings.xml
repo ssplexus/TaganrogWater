@@ -30,6 +30,7 @@
     <string name="about">О программе</string>
 
     <string name="tagWaterlink">Информация с <a href="http://www.tgnvoda.ru/avarii.php">сайта</a>\nМУП «Управление Водоканал»\nг. Таганрог</string>
+    <string name="tagWaterSitelink"><a href="http://www.tgnvoda.ru/avarii.php">\nМУП «Управление Водоканал» г. Таганрог</a></string>
     <string name="clear_archive">Очистить\nархив</string>
     <string name="chack_new_data">Актуализировать данные</string>
     <string name="show_notifications">Показывать уведомления</string>
@@ -37,10 +38,11 @@
     <string name="clear_notifications">Удалить\nнапоминания</string>
     <string name="about_info">Неофициальное приложение для предоставления оперативной информации с официального <a href="http://www.tgnvoda.ru/avarii.php">сайта</a> Таганрогского муниципального унитарного предприятия «УПРАВЛЕНИЕ «ВОДОКАНАЛ».</string>
     <string name="no_internet_connection">Нет интернет соединения</string>
-    <string name="get_data_failed">Не удалось получить данные с сайта!Возможно сайт недоступен</string>
+    <string name="get_data_failed">Не удалось получить данные с сайта! Возможно сайт недоступен</string>
     <string name="no_data">Нет данных для отображения</string>
     <string name="author_str">© Vasyutchenko Alexey 2023</string>
     <string name="search">Поиск...</string>
+    <string name="help">Помощь</string>
 
     <string-array name="periods">
         <item>12 часов</item>

@@ -23,13 +23,15 @@
         android:theme="@style/splash_screen"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-       <receiver
+
+        <receiver
             android:name=".receivers.NotificationReceiver"
             android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
 
         <activity
             android:name=".activity.SettingsActivity"
@@ -46,6 +48,12 @@
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name=".activity.HelpActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"/>
         <activity
             android:name=".activity.AboutActivity"
             android:exported="false"

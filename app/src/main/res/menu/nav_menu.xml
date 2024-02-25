@@ -8,6 +8,9 @@
 <item android:id="@+id/contacts"
     android:title="@string/contacts"
     android:icon="@drawable/contact_icon"/>
+<item android:id="@+id/help"
+        android:title="@string/help"
+        android:icon="@drawable/help_outline_icon"/>
 <item android:id="@+id/about"
     android:title="@string/about"
     android:icon="@drawable/info_icon"/>

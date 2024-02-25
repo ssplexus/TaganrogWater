@@ -9,6 +9,7 @@ import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainRepository(private val notificationDao: NotificationDao) {
     fun getNotificationsDataObservable() : Observable<List<NotificationsData>> = notificationDao.getCachedDataObservable()
@@ -24,7 +25,8 @@ class MainRepository(private val notificationDao: NotificationDao) {
         App.instance.interactor.appendLog("putToDb")
         list.forEach {
                 val srcText = it.trim()
-                val words = srcText.split(" ") as ArrayList<String>
+//                val words = srcText.split(" ")as ArrayList<String>
+                val words = srcText.split(" ").toMutableList()
                 if(!words.isEmpty() && words.size > 1){
                     var dateStr = words.removeFirst()
                     val formatter = SimpleDateFormat("dd.MM.yy")
