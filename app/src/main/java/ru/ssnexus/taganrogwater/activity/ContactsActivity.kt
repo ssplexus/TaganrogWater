@@ -19,6 +19,7 @@ import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityContactsBinding
@@ -31,7 +32,7 @@ class ContactsActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var progressDialog: ProgressDialog
 
-    private val contactsUrl = AppConstants.CONTACTS_URL
+    private val contactsUrl = App.instance.interactor.getSiteContactsUrlPref()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +46,7 @@ class ContactsActivity : AppCompatActivity() {
         progressBar = binding.progressBar
         progressDialog = ProgressDialog(this)
         progressDialog.setMessage(resources.getString(R.string.loading_please_wait))
-        var webSettings: WebSettings = webView.settings
+        val webSettings: WebSettings = webView.settings
         webSettings.builtInZoomControls = true
         webSettings.javaScriptEnabled = true
         webView.webViewClient = MyWebViewClient()

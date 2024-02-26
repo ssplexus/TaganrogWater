@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
 import ru.ssnexus.taganrogwater.activity.MainActivity
 import ru.ssnexus.taganrogwater.data.MainRepository
@@ -80,7 +81,7 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
         val scope = CoroutineScope(Dispatchers.Default)
         // Launch a new coroutine in the scope
         scope.launch {
-            val url = URL(AppConstants.DATA_URL)
+            val url = URL(App.instance.interactor.getSiteUrlPref())
             try{
                 val doc: Document = Jsoup.connect(url.toString()).get()
                 var element = doc.select("table").get(1)
@@ -118,11 +119,20 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
     fun setFirstLaunch(flag: Boolean){
         prefs.setFirstLaunchPref(flag)
     }
+    fun setSiteUrlPref(url: String){
+        prefs.setSiteURL(url)
+    }
+    fun setSiteContactsUrlPref(url: String){
+        prefs.setSiteContactsURL(url)
+    }
 
     fun getShowArchivePref(): Boolean = prefs.getShowArchivePref()
     fun getShowNotifPref(): Boolean = prefs.getShowNotifPref()
     fun getCheckDataPref(): Boolean = prefs.getCheckDatafPref()
     fun getFirstLaunch(): Boolean = prefs.getFirstLaunchfPref()
+    fun getSiteUrlPref(): String = prefs.getSiteUrlPref()
+    fun getSiteContactsUrlPref(): String = prefs.getSiteContactsUrlPref()
+
 
     fun removeArchive(){
         repo.removeArchiveData()

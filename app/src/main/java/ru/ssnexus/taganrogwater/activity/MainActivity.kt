@@ -76,23 +76,32 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener(OnCompleteListener { task ->
                 //Если не удастся получить токен, то логируем причину и выходим из слушателя
                 if (!task.isSuccessful) {
-                    Timber.w("MainActivity Fetching FCM registration token failed" + task.exception);
+                    Timber.w("MainActivity FB Result: MainActivity Fetching FCM registration token failed" + task.exception);
                     return@OnCompleteListener
                 }
                 //Если получилось, то логируем токен
-                Timber.i("MainActivity" + task.result!!)
+                Timber.i("MainActivity FB Result" + task.result!!)
             })
 
         AboutActivity.author_text = resources.getText(R.string.author_str).toString()
         // Получение параметра из Remote Config
         val mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
         val mFirebaseRemoteConfigSettings = FirebaseRemoteConfigSettings.Builder().build()
-        mFirebaseRemoteConfig.setConfigSettingsAsync(mFirebaseRemoteConfigSettings)
-        mFirebaseRemoteConfig.fetch(0).addOnCompleteListener(this) {task ->
-            if(task.isSuccessful)
-                mFirebaseRemoteConfig.activate()
-                val fbVal = mFirebaseRemoteConfig.getString("email_val")
-                AboutActivity.author_text += "\n" + fbVal
+        mFirebaseRemoteConfig.reset()
+        mFirebaseRemoteConfig.setConfigSettingsAsync(mFirebaseRemoteConfigSettings).addOnCompleteListener { _ ->
+            mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val fbValEmail = mFirebaseRemoteConfig.getString("email_val")
+                    val fbValSiteUrl = mFirebaseRemoteConfig.getString("site_url")
+                    val fbValSiteContactsUrl = mFirebaseRemoteConfig.getString("site_contacts_url")
+                    Timber.i("MainActivity FB Result: Fetch config success! $fbValEmail")
+                    Timber.i("MainActivity FB Result: Fetch config success! $fbValSiteUrl")
+                    Timber.i("MainActivity FB Result: Fetch config success! $fbValSiteContactsUrl")
+                    AboutActivity.author_text += "\n" + fbValEmail
+                    if(fbValSiteUrl.isNotEmpty()) App.instance.interactor.setSiteUrlPref(fbValSiteUrl)
+                    if(fbValSiteContactsUrl.isNotEmpty()) App.instance.interactor.setSiteContactsUrlPref(fbValSiteContactsUrl)
+                }
+            }
         }
 
         // Проверяем, есть ли разрешение WRITE_EXTERNAL_STORAGE

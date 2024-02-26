@@ -3,6 +3,7 @@ package ru.ssnexus.taganrogwater.preferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import ru.ssnexus.taganrogwater.AppConstants
 import timber.log.Timber
 
 class PreferencesProvider (context: Context) {
@@ -37,10 +38,22 @@ class PreferencesProvider (context: Context) {
         Timber.d("KEY_FIRST_LAUNCH=%s", getCheckDatafPref())
     }
 
+    fun setSiteURL(url: String){
+        preference.edit{ putString(KEY_SITE_URL, url)}
+        Timber.d("KEY_SITE_URL=%s", getSiteUrlPref())
+    }
+    fun setSiteContactsURL(url: String){
+        preference.edit{ putString(KEY_SITE_CONTACTS_URL, url)}
+        Timber.d("KEY_SITE_URL=%s", getSiteContactsUrlPref())
+    }
+
     fun getShowArchivePref() = preference.getBoolean(KEY_SHOW_ARCHIVE_SWITCH, true)
     fun getShowNotifPref() = preference.getBoolean(KEY_SHOW_NOTIF_SWITCH, true)
     fun getCheckDatafPref() = preference.getBoolean(KEY_CHECK_DATA_SWITCH, true)
     fun getFirstLaunchfPref() = preference.getBoolean(KEY_FIRST_LAUNCH, true)
+
+    fun getSiteUrlPref() = preference.getString(KEY_SITE_URL, AppConstants.DATA_URL).toString()
+    fun getSiteContactsUrlPref() = preference.getString(KEY_SITE_CONTACTS_URL, AppConstants.CONTACTS_URL).toString()
 
     //Получить время первого запуска
     fun getFirstLaunchTime():Long{
@@ -54,5 +67,8 @@ class PreferencesProvider (context: Context) {
         const val KEY_SHOW_ARCHIVE_SWITCH = "archive_switch"
         const val KEY_SHOW_NOTIF_SWITCH = "show_notif_switch"
         const val KEY_CHECK_DATA_SWITCH = "check_data_switch"
+
+        const val KEY_SITE_URL = "key_site_url"
+        const val KEY_SITE_CONTACTS_URL = "key_site_contacts_url"
     }
 }
