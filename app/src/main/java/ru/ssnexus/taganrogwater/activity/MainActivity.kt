@@ -5,10 +5,8 @@
 
 package ru.ssnexus.taganrogwater.activity
 
-import android.Manifest
 import android.app.ProgressDialog
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -22,19 +20,14 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.BuildConfig
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.AppConstants
-import ru.ssnexus.taganrogwater.AppConstants.STORAGE_PERMISSION_REQUEST_CODE
 import ru.ssnexus.taganrogwater.NotificationAdapter
 import ru.ssnexus.taganrogwater.R
 import ru.ssnexus.taganrogwater.databinding.ActivityMainBinding
@@ -42,6 +35,7 @@ import ru.ssnexus.taganrogwater.utils.AutoDisposable
 import ru.ssnexus.taganrogwater.utils.NotificationHelper
 import ru.ssnexus.taganrogwater.utils.NotificationHelper.createCheckDataAlarmOneShot
 import ru.ssnexus.taganrogwater.utils.Utils
+import ru.ssnexus.taganrogwater.utils.Utils.getFireBaseRemoteConfig
 import ru.ssnexus.taganrogwater.viewmodel.MainViewModel
 import timber.log.Timber
 import kotlin.system.exitProcess
@@ -83,43 +77,25 @@ class MainActivity : AppCompatActivity() {
                 Timber.i("MainActivity FB Result" + task.result!!)
             })
 
-        AboutActivity.author_text = resources.getText(R.string.author_str).toString()
-        // Получение параметра из Remote Config
-        val mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
-        val mFirebaseRemoteConfigSettings = FirebaseRemoteConfigSettings.Builder().build()
-        mFirebaseRemoteConfig.reset()
-        mFirebaseRemoteConfig.setConfigSettingsAsync(mFirebaseRemoteConfigSettings).addOnCompleteListener { _ ->
-            mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val fbValEmail = mFirebaseRemoteConfig.getString("email_val")
-                    val fbValSiteUrl = mFirebaseRemoteConfig.getString("site_url")
-                    val fbValSiteContactsUrl = mFirebaseRemoteConfig.getString("site_contacts_url")
-                    Timber.i("MainActivity FB Result: Fetch config success! $fbValEmail")
-                    Timber.i("MainActivity FB Result: Fetch config success! $fbValSiteUrl")
-                    Timber.i("MainActivity FB Result: Fetch config success! $fbValSiteContactsUrl")
-                    AboutActivity.author_text += "\n" + fbValEmail
-                    if(fbValSiteUrl.isNotEmpty()) App.instance.interactor.setSiteUrlPref(fbValSiteUrl)
-                    if(fbValSiteContactsUrl.isNotEmpty()) App.instance.interactor.setSiteContactsUrlPref(fbValSiteContactsUrl)
-                }
-            }
-        }
+        // Получение удалённой конфигурации
+        getFireBaseRemoteConfig(this)
 
-        // Проверяем, есть ли разрешение WRITE_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            // Уже есть разрешение, выполняем операции записи в хранилище
-            App.instance.interactor.appendLog("App Started")
-        } else {
-            // Разрешение не предоставлено, запрашиваем его у пользователя
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                STORAGE_PERMISSION_REQUEST_CODE
-            )
-        }
+//        // Проверяем, есть ли разрешение WRITE_EXTERNAL_STORAGE
+//        if (ContextCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//            // Уже есть разрешение, выполняем операции записи в хранилище
+//            App.instance.interactor.appendLog("App Started")
+//        } else {
+//            // Разрешение не предоставлено, запрашиваем его у пользователя
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+//                STORAGE_PERMISSION_REQUEST_CODE
+//            )
+//        }
 
         // Метод инициализации
         initLayout()
@@ -227,11 +203,15 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show()
                 hideRVFlag = true
             }
-            else
+            else{
                 if(!it) {
                     Toast.makeText(this, getString(R.string.get_data_failed), Toast.LENGTH_LONG).show()
                     hideRVFlag = true
                 }
+                // Получение удалённой конфигурации
+                getFireBaseRemoteConfig(this)
+            }
+
             if(hideRVFlag){
                 val adapter = binding.operInfoRV.adapter
                 if(adapter?.itemCount == 0){
@@ -293,7 +273,7 @@ class MainActivity : AppCompatActivity() {
         if(!NotificationHelper.isPresentAlarm(App.instance.applicationContext,
                 AppConstants.ACTION_CHECKDATA,
                 AppConstants.CHECKDATA_ALARM_REQUEST_CODE)){
-            App.instance.interactor.appendLog("FirstLaunch")
+//            App.instance.interactor.appendLog("FirstLaunch")
             App.instance.interactor.getData()
             createCheckDataAlarmOneShot(App.instance.applicationContext, AppConstants.CHECKDATA_PERIOD)
         }
@@ -341,28 +321,29 @@ class MainActivity : AppCompatActivity() {
         notificationAdapter.updateNotificationsList(App.instance.interactor.getNotificationsCachedList())
     }
 
-    // Метод вызывается после ответа пользователя на запрос разрешения
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when (requestCode) {
-            STORAGE_PERMISSION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Разрешение предоставлено, выполняем операции записи в хранилище
-                    App.instance.interactor.appendLog("App Started")
-                } else {
-                    // Разрешение не предоставлено, выводим сообщение об ошибке
-                    Toast.makeText(
-                        this,
-                        "Разрешение на запись во внешнее хранилище не предоставлено",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
-    }
+//    // Метод вызывается после ответа пользователя на запрос разрешения
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//
+//        when (requestCode) {
+//            STORAGE_PERMISSION_REQUEST_CODE -> {
+//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // Разрешение предоставлено, выполняем операции записи в х
+//                // ранилище
+//                    App.instance.interactor.appendLog("App Started")
+//                } else {
+//                    // Разрешение не предоставлено, выводим сообщение об ошибке
+//                    Toast.makeText(
+//                        this,
+//                        "Разрешение на запись во внешнее хранилище не предоставлено",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            }
+//        }
+//    }
 }

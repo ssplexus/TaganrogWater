@@ -68,7 +68,7 @@ object NotificationHelper {
     // Создание будильника проверки наличия будильника опроса сайта
     fun createCheckDataAlarmOneShot(context: Context, period: Long){
         Timber.d("createCheckDataAlarmOneShot!!!")
-        App.instance.interactor.appendLog("createCheckDataAlarmOneShot")
+//        App.instance.interactor.appendLog("createCheckDataAlarmOneShot")
         //Получаем доступ к AlarmManager
         val alarmManager =
             context.getSystemService(Context.ALARM_SERVICE) as AlarmManager

@@ -7,15 +7,18 @@
     tools:context=".activity.DetailsActivity"
     android:orientation="vertical">
 
-    <ImageView
+    <LinearLayout
         android:id="@+id/logoImg"
         android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:background="@color/bright_water"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/settingsCaption"
-        android:scaleType="fitEnd"
-        android:src="@drawable/tagan_image" />
+        android:orientation="horizontal"
+        android:background="@color/bright_water">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/tagan_image_v3" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/settingsCaption"

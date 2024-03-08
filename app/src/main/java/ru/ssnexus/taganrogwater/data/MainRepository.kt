@@ -22,7 +22,7 @@ class MainRepository(private val notificationDao: NotificationDao) {
         val incomingNotificationsList = ArrayList<NotificationsData>()
         val newNotificationsList = ArrayList<NotificationsData>()
         val archNotificationsList = notificationsCached.toMutableList()
-        App.instance.interactor.appendLog("putToDb")
+//        App.instance.interactor.appendLog("putToDb")
         list.forEach {
                 val srcText = it.trim()
 //                val words = srcText.split(" ")as ArrayList<String>
@@ -71,7 +71,7 @@ class MainRepository(private val notificationDao: NotificationDao) {
             }
         }
 
-        App.instance.interactor.appendLog("СacheSize=$cacheSize")
+//        App.instance.interactor.appendLog("СacheSize=$cacheSize")
         if(cacheSize != 0) {
             val formatter = SimpleDateFormat("dd.MM.yyyy")
             newNotificationsList.forEach {

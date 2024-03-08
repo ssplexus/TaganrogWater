@@ -76,7 +76,7 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
 
     // Метод опроса сайта
     fun getData(){
-        appendLog("getData")
+//        appendLog("getData")
         // Create a new coroutine scope
         val scope = CoroutineScope(Dispatchers.Default)
         // Launch a new coroutine in the scope
@@ -94,7 +94,7 @@ class Interactor(private val repo: MainRepository, private val prefs: Preference
                 notifications.removeLast()
 
                 if (!notifications.isEmpty()) {
-                    appendLog("notifications is not empty")
+//                    appendLog("notifications is not empty")
                     repo.putToDb(notifications)
                 }
                 // Отправка результата опроса

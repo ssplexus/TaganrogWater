@@ -12,7 +12,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/tgnwater_icon_splashscreen"
+            android:src="@mipmap/tgnwater_icon_splashscreen_round"
             android:paddingTop="5dp"/>
 
         <TextView

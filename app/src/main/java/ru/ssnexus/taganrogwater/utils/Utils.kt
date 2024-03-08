@@ -9,8 +9,14 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.view.Window
 import android.widget.*
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import ru.ssnexus.taganrogwater.App
 import ru.ssnexus.taganrogwater.R
+import ru.ssnexus.taganrogwater.activity.AboutActivity
 import ru.ssnexus.taganrogwater.activity.DetailsActivity
+import ru.ssnexus.taganrogwater.activity.MainActivity
+import timber.log.Timber
 import java.io.IOException
 
 object Utils {
@@ -101,6 +107,30 @@ object Utils {
         else if (srcDay < cmpDay) return -1
 
         return 0
+    }
+
+    fun getFireBaseRemoteConfig(activity: MainActivity){
+        if(AboutActivity.author_text.isEmpty())
+                AboutActivity.author_text = activity.resources.getText(R.string.author_str).toString()
+        // Получение параметра из Remote Config
+        val mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+        val mFirebaseRemoteConfigSettings = FirebaseRemoteConfigSettings.Builder().build()
+        mFirebaseRemoteConfig.reset()
+        mFirebaseRemoteConfig.setConfigSettingsAsync(mFirebaseRemoteConfigSettings).addOnCompleteListener { _ ->
+            mFirebaseRemoteConfig.fetchAndActivate().addOnCompleteListener(activity) { task ->
+                if (task.isSuccessful) {
+                    val fbValEmail = mFirebaseRemoteConfig.getString("email_val")
+                    val fbValSiteUrl = mFirebaseRemoteConfig.getString("site_url")
+                    val fbValSiteContactsUrl = mFirebaseRemoteConfig.getString("site_contacts_url")
+                    Timber.i("MainActivity FB Result: Fetch config success! $fbValEmail")
+                    Timber.i("MainActivity FB Result: Fetch config success! $fbValSiteUrl")
+                    Timber.i("MainActivity FB Result: Fetch config success! $fbValSiteContactsUrl")
+                    AboutActivity.author_text = activity.resources.getText(R.string.author_str).toString() + "\n" + fbValEmail
+                    if(fbValSiteUrl.isNotEmpty()) App.instance.interactor.setSiteUrlPref(fbValSiteUrl)
+                    if(fbValSiteContactsUrl.isNotEmpty()) App.instance.interactor.setSiteContactsUrlPref(fbValSiteContactsUrl)
+                }
+            }
+        }
     }
 }
 //                val randId = random.nextInt(9999 - 1000) + 1000
